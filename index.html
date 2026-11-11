@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#12ae95" />
+    <meta
+      name="description"
+      content="回收报价详情页成色价展示原型：支持按靓机、小花、大花、外爆、内爆五档成色查看对应回收价。"
+    />
+    <title>成色价展示｜回收报价原型</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312ae95'/%3E%3Cpath d='M19 42h26v7H19zm3-10h20v6H22zm5-12h10v6H27z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./assets/app.css?v=20261111-1" />
+    <script src="./assets/app.js?v=20261111-1" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <div class="app-shell">
+      <header class="detail-header">
+        <div class="header-row">
+          <button class="header-button" id="backButton" type="button" aria-label="返回上一页">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 4-7 8 7 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" />
+            </svg>
+          </button>
+          <div class="device-heading">
+            <h1>iPhone 16 <span aria-hidden="true">|</span> Z05471S0548</h1>
+            <p>已读取设备信息 · 报价实时更新</p>
+          </div>
+          <span class="header-status"><i aria-hidden="true"></i>检测完成</span>
+        </div>
+      </header>
+
+      <main class="page-content" id="main-content">
+        <section class="price-card" aria-labelledby="price-card-title">
+          <div class="price-card-head">
+            <div>
+              <p class="eyebrow">本次回收报价</p>
+              <h2 id="price-card-title">价格详情</h2>
+            </div>
+            <div class="display-switch" role="group" aria-label="价格展示方式">
+              <button id="estimateModeButton" type="button" data-price-mode="estimate" aria-pressed="false">预估价</button>
+              <button id="conditionModeButton" class="is-active" type="button" data-price-mode="condition" aria-pressed="true">
+                成色价
+                <span class="new-badge">新</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="price-focus">
+            <p class="price-kicker">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="priceKicker">当前成色 · 靓机</span>
+            </p>
+            <div class="price-line">
+              <span class="currency" aria-hidden="true">¥</span>
+              <strong class="price-value" id="priceValue">4,923</strong>
+              <span class="delta-badge" id="deltaBadge">最高成色价</span>
+            </div>
+            <p class="price-description" id="priceDescription">屏幕、边框、背板状态良好</p>
+          </div>
+
+          <div class="condition-picker" id="conditionPicker">
+            <div class="condition-heading">
+              <span>五档成色，报价一目了然</span>
+              <button class="text-button" id="openGradeDialog" type="button">
+                判定标准
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                </svg>
+              </button>
+            </div>
+            <div class="condition-grid" id="conditionGrid" role="radiogroup" aria-label="选择成色查看报价">
+              <button class="condition-option is-selected" type="button" role="radio" aria-checked="true" data-grade="excellent" tabindex="0">
+                <span class="grade-dot" aria-hidden="true"></span>
+                <span class="grade-name">靓机</span>
+                <strong>4,923</strong>
+              </button>
+              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="minor" tabindex="-1">
+                <span class="grade-dot" aria-hidden="true"></span>
+                <span class="grade-name">小花</span>
+                <strong>4,650</strong>
+              </button>
+              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="major" tabindex="-1">
+                <span class="grade-dot" aria-hidden="true"></span>
+                <span class="grade-name">大花</span>
+                <strong>4,180</strong>
+              </button>
+              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="outer" tabindex="-1">
+                <span class="grade-dot" aria-hidden="true"></span>
+                <span class="grade-name">外爆</span>
+                <strong>3,260</strong>
+              </button>
+              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="inner" tabindex="-1">
+                <span class="grade-dot" aria-hidden="true"></span>
+                <span class="grade-name">内爆</span>
+                <strong>2,450</strong>
+              </button>
+            </div>
+          </div>
+
+          <div class="estimate-panel" id="estimatePanel" hidden>
+            <div class="trend-block">
+              <span>预估下周</span>
+              <strong>↘ 跌 383 元</strong>
+            </div>
+            <p>当前报价接近近期高位，建议今天锁定价格。</p>
+          </div>
+
+          <div class="card-footnote">
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.2" />
+              <path d="M8 7.1v3.5M8 5.1v.1" stroke="currentColor" stroke-linecap="round" stroke-width="1.3" />
+            </svg>
+            <span id="footnoteText">当前为最高成色价，实际价格以质检结果为准</span>
+          </div>
+        </section>
+
+        <section class="inspection-card" aria-labelledby="inspection-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">AI 外观识别</p>
+              <h2 id="inspection-title">检测到 2 项外观情况</h2>
+            </div>
+            <span class="result-pill">影响成色</span>
+          </div>
+          <div class="appearance-tags" role="list" aria-label="已识别外观情况">
+            <span role="listitem">屏幕明显划痕 / 凸点 / 掉漆 / 折痕</span>
+            <span role="listitem">屏幕破损</span>
+          </div>
+          <p class="inspection-hint">如实际机况与识别结果不一致，请在询高价时重新选择。</p>
+        </section>
+
+        <section class="form-card" aria-labelledby="screen-title">
+          <div class="section-heading compact">
+            <div>
+              <h2 id="screen-title"><span class="title-bar" aria-hidden="true"></span>屏幕显示</h2>
+              <p>请选择最符合实际机况的一项</p>
+            </div>
+            <button class="help-button" type="button" data-tip="屏幕显示状态会影响成色及最终回收价" aria-label="屏幕显示说明">?</button>
+          </div>
+          <div class="choice-list" data-choice-group="screen" data-multi="false" role="group" aria-label="屏幕显示状态">
+            <button class="choice-chip is-selected" type="button" aria-pressed="true">显示完美无瑕疵</button>
+            <button class="choice-chip" type="button" aria-pressed="false">亮点 / 色差 / 轻微发黄</button>
+            <button class="choice-chip" type="button" aria-pressed="false">老化 / 色斑</button>
+            <button class="choice-chip" type="button" aria-pressed="false">显示不正常 / 漏液 / 断线</button>
+            <button class="choice-chip" type="button" aria-pressed="false">完全不显示 / 全花屏</button>
+          </div>
+        </section>
+
+        <section class="form-card" aria-labelledby="battery-title">
+          <div class="section-heading compact">
+            <div>
+              <h2 id="battery-title"><span class="title-bar" aria-hidden="true"></span>电池健康度</h2>
+              <p>以系统读取值为准</p>
+            </div>
+            <span class="battery-value">95%</span>
+          </div>
+          <div class="choice-list" data-choice-group="battery" data-multi="false" role="group" aria-label="电池健康度">
+            <button class="choice-chip is-selected" type="button" aria-pressed="true">电池健康 95%–100%</button>
+            <button class="choice-chip" type="button" aria-pressed="false">电池健康 90%–95%</button>
+            <button class="choice-chip" type="button" aria-pressed="false">电池健康 81%–90%</button>
+            <button class="choice-chip" type="button" aria-pressed="false">电池健康 81% 以下</button>
+          </div>
+        </section>
+
+        <section class="form-card function-card" aria-labelledby="function-title">
+          <button class="section-heading compact function-toggle" id="functionToggle" type="button" aria-expanded="true" aria-controls="functionBody">
+            <span>
+              <span class="function-title-row">
+                <span class="function-title" id="function-title">功能异常</span>
+                <span class="optional-label">可多选</span>
+              </span>
+              <span class="section-subtitle">如有异常请如实选择，避免复检差价</span>
+            </span>
+            <span class="collapse-icon" aria-hidden="true">
+              <svg viewBox="0 0 16 16">
+                <path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" />
+              </svg>
+            </span>
+          </button>
+
+          <div class="function-body" id="functionBody">
+            <div class="warning-banner">
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.4" />
+                <path d="M10 5.8v5M10 13.7v.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" />
+              </svg>
+              <p>异常选项会影响价格及差错追责，请仔细核验。</p>
+            </div>
+            <div class="choice-list function-list" data-choice-group="function" data-multi="true" role="group" aria-label="功能异常，可多选">
+              <button class="choice-chip" type="button" aria-pressed="false">不能正常开机 / 反复重启</button>
+              <button class="choice-chip" type="button" aria-pressed="false">ID / 账户锁无法解除</button>
+              <button class="choice-chip" type="button" aria-pressed="false">触屏失灵</button>
+              <button class="choice-chip" type="button" aria-pressed="false">外屏维修 / 脱胶 / 气泡</button>
+              <button class="choice-chip" type="button" aria-pressed="false">屏幕维修</button>
+              <button class="choice-chip" type="button" aria-pressed="false">通话异常</button>
+              <button class="choice-chip" type="button" aria-pressed="false">WiFi / 蓝牙信号弱或无</button>
+              <button class="choice-chip" type="button" aria-pressed="false">有拆修或故障</button>
+              <button class="choice-chip" type="button" aria-pressed="false">有网络锁</button>
+              <button class="choice-chip" type="button" aria-pressed="false">Face ID 不正常</button>
+              <button class="choice-chip" type="button" aria-pressed="false">摄像头有斑</button>
+              <button class="choice-chip" type="button" aria-pressed="false">前摄像头不正常</button>
+              <button class="choice-chip" type="button" aria-pressed="false">后摄像头不正常</button>
+              <button class="choice-chip" type="button" aria-pressed="false">按键不正常</button>
+              <button class="choice-chip" type="button" aria-pressed="false">充电 ≤81%</button>
+              <button class="choice-chip" type="button" aria-pressed="false">充电或电池异常 / 更换电池</button>
+            </div>
+          </div>
+        </section>
+
+        <p class="legal-note">提交后，最终回收价以门店质检结果为准。成色判定与功能异常不可重复计价。</p>
+      </main>
+
+      <button class="service-button" id="serviceButton" type="button" aria-label="联系在线客服">
+        <span class="service-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M5.5 13.5v-2a6.5 6.5 0 0 1 13 0v2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" />
+            <path d="M5.5 12.5h1.2c.7 0 1.3.6 1.3 1.3v3.4c0 .7-.6 1.3-1.3 1.3H5.5zM18.5 12.5h-1.2c-.7 0-1.3.6-1.3 1.3v3.4c0 .7.6 1.3 1.3 1.3h1.2z" fill="currentColor" />
+            <path d="M15 19c-.6.8-1.3 1.2-2.4 1.2H11" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.7" />
+          </svg>
+        </span>
+        客服
+      </button>
+
+      <footer class="sticky-footer">
+        <div class="sticky-summary" aria-live="polite">
+          <span id="stickyLabel">靓机成色价</span>
+          <strong id="stickyPrice">¥4,923</strong>
+        </div>
+        <button class="quote-button" id="quoteButton" type="button">
+          询高价
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 10h11M11 6l4 4-4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
+          </svg>
+        </button>
+      </footer>
+    </div>
+
+    <dialog class="grade-dialog" id="gradeDialog" aria-labelledby="grade-dialog-title">
+      <div class="dialog-handle" aria-hidden="true"></div>
+      <div class="dialog-head">
+        <div>
+          <p class="eyebrow">GRADE GUIDE</p>
+          <h2 id="grade-dialog-title">成色判定标准</h2>
+        </div>
+        <button class="dialog-close" id="closeGradeDialog" type="button" aria-label="关闭成色判定标准">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m5 5 10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.7" />
+          </svg>
+        </button>
+      </div>
+      <p class="dialog-intro">成色价根据外观与屏幕状态综合判定。选择成色可查看对应回收价，最终以质检结果为准。</p>
+      <div class="grade-standard-list">
+        <article data-grade="excellent">
+          <span class="grade-dot" aria-hidden="true"></span>
+          <div><h3>靓机</h3><p>边框、背板仅有细微使用痕迹，屏幕显示完好，无碎屏、漏液或显示异常。</p></div>
+        </article>
+        <article data-grade="minor">
+          <span class="grade-dot" aria-hidden="true"></span>
+          <div><h3>小花</h3><p>少量明显划痕或轻微磕碰，屏幕显示正常，无碎屏、漏液或显示异常。</p></div>
+        </article>
+        <article data-grade="major">
+          <span class="grade-dot" aria-hidden="true"></span>
+          <div><h3>大花</h3><p>多处划痕、掉漆或磕碰，结构完整，屏幕显示及触控正常。</p></div>
+        </article>
+        <article data-grade="outer">
+          <span class="grade-dot" aria-hidden="true"></span>
+          <div><h3>外爆</h3><p>外屏玻璃破裂或碎角，显示与触控状态需以质检复检结果为准。</p></div>
+        </article>
+        <article data-grade="inner">
+          <span class="grade-dot" aria-hidden="true"></span>
+          <div><h3>内爆</h3><p>内屏漏液、黑斑、色带或显示异常，需拆机复检确认最终价格。</p></div>
+        </article>
+      </div>
+      <p class="dialog-note">屏幕显示、电池健康度与功能异常会叠加影响最终价。成色价与功能扣减不重复计算。</p>
+      <button class="dialog-confirm" id="confirmGradeDialog" type="button">我知道了</button>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>
