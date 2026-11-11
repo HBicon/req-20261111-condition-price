@@ -2,50 +2,45 @@ const grades = {
   excellent: {
     name: "靓机",
     price: 4923,
-    shortDelta: "最高成色价",
     description: "屏幕、边框、背板状态良好",
-    deduction: 0,
   },
   minor: {
     name: "小花",
     price: 4650,
-    shortDelta: "低 293",
     description: "仅少量细小划痕，不影响使用",
-    deduction: 293,
   },
   major: {
     name: "大花",
     price: 4180,
-    shortDelta: "低 743",
     description: "明显划痕或磕碰，功能正常",
-    deduction: 743,
   },
   outer: {
     name: "外爆",
     price: 3260,
-    shortDelta: "低 1,663",
     description: "外屏破损，显示及触控需复检",
-    deduction: 1663,
   },
   inner: {
     name: "内爆",
     price: 2450,
-    shortDelta: "低 2,473",
     description: "内屏显示异常，需拆机复检",
-    deduction: 2473,
   },
 };
 
 const currencyFormatter = new Intl.NumberFormat("zh-CN");
-const estimatePrice = 4923;
+const estimateBasePrice = 4923;
 const modeButtons = [...document.querySelectorAll("[data-price-mode]")];
 const conditionButtons = [...document.querySelectorAll(".condition-option")];
+const gradePriceElements = [...document.querySelectorAll("[data-grade-price]")];
 const conditionPicker = document.querySelector("#conditionPicker");
 const estimatePanel = document.querySelector("#estimatePanel");
+const estimateHint = document.querySelector("#estimateHint");
 const priceKicker = document.querySelector("#priceKicker");
 const priceValue = document.querySelector("#priceValue");
 const deltaBadge = document.querySelector("#deltaBadge");
 const priceDescription = document.querySelector("#priceDescription");
+const basePriceValue = document.querySelector("#basePriceValue");
+const bandExtraValue = document.querySelector("#bandExtraValue");
+const bandMatchText = document.querySelector("#bandMatchText");
 const footnoteText = document.querySelector("#footnoteText");
 const stickyLabel = document.querySelector("#stickyLabel");
 const stickyPrice = document.querySelector("#stickyPrice");
@@ -60,32 +55,57 @@ function formatPrice(value) {
   return currencyFormatter.format(value);
 }
 
+function renderConditionPriceTiles(rules) {
+  gradePriceElements.forEach((element) => {
+    const grade = grades[element.dataset.gradePrice];
+    const quote = PricingConfig.calculate(grade.price, rules);
+    element.textContent = formatPrice(quote.final);
+    element.title = `基础价 ¥${formatPrice(quote.base)}，加价 ¥${formatPrice(quote.extra)}`;
+  });
+}
+
+function renderQuoteBreakdown(quote) {
+  basePriceValue.textContent = `¥${formatPrice(quote.base)}`;
+  bandExtraValue.textContent = `+¥${formatPrice(quote.extra)}`;
+  bandMatchText.textContent = quote.matched
+    ? `命中 ${PricingConfig.formatBand(quote.rule)}`
+    : "当前价格段未配置加价";
+  deltaBadge.textContent = quote.matched ? `含加价 +¥${formatPrice(quote.extra)}` : "未命中加价";
+  deltaBadge.classList.toggle("is-deducted", !quote.matched);
+}
+
 function renderPrice() {
   const grade = grades[currentGrade];
+  const { rules } = PricingConfig.loadState();
+  renderConditionPriceTiles(rules);
 
   if (currentMode === "estimate") {
-    priceValue.textContent = formatPrice(estimatePrice);
-    stickyPrice.textContent = `¥${formatPrice(estimatePrice)}`;
-    priceKicker.textContent = "预估价 · 今日检测";
-    deltaBadge.textContent = "下周预计 ↓ 383";
-    deltaBadge.classList.add("is-deducted");
+    const quote = PricingConfig.calculate(estimateBasePrice, rules);
+    priceValue.textContent = formatPrice(quote.final);
+    stickyPrice.textContent = `¥${formatPrice(quote.final)}`;
+    priceKicker.textContent = "最新估价 · 今日检测";
     priceDescription.textContent = "综合 12 项检测状态与近期行情给出";
-    footnoteText.textContent = "预估价格随市场波动，实际价格以质检结果为准";
-    stickyLabel.textContent = "当前预估价";
+    renderQuoteBreakdown(quote);
+    estimateHint.textContent = quote.matched
+      ? `已叠加价格段加价 ¥${formatPrice(quote.extra)}，建议今天锁定报价。`
+      : "当前价格段未配置加价，展示基础预估价。";
+    footnoteText.textContent = quote.matched
+      ? `最新估价＝基础预估价 ¥${formatPrice(quote.base)}＋价格段加价 ¥${formatPrice(quote.extra)}，最终以质检结果为准`
+      : "当前价格段未配置加价，最终价格以质检结果为准";
+    stickyLabel.textContent = "最新预估价";
     return;
   }
 
-  priceValue.textContent = formatPrice(grade.price);
-  stickyPrice.textContent = `¥${formatPrice(grade.price)}`;
-  priceKicker.textContent = `当前成色 · ${grade.name}`;
-  deltaBadge.textContent = grade.shortDelta;
-  deltaBadge.classList.toggle("is-deducted", grade.deduction > 0);
+  const quote = PricingConfig.calculate(grade.price, rules);
+  priceValue.textContent = formatPrice(quote.final);
+  stickyPrice.textContent = `¥${formatPrice(quote.final)}`;
+  priceKicker.textContent = `最新估价 · ${grade.name}`;
   priceDescription.textContent = grade.description;
-  footnoteText.textContent =
-    grade.deduction === 0
-      ? "当前为最高成色价，实际价格以质检结果为准"
-      : `比靓机价低 ¥${formatPrice(grade.deduction)}，实际价格以质检结果为准`;
-  stickyLabel.textContent = `${grade.name}成色价`;
+  renderQuoteBreakdown(quote);
+  footnoteText.textContent = quote.matched
+    ? `最新估价＝成色基础价 ¥${formatPrice(quote.base)}＋价格段加价 ¥${formatPrice(quote.extra)}，最终以质检结果为准`
+    : "当前价格段未配置加价，展示成色基础价，最终以质检结果为准";
+  stickyLabel.textContent = `${grade.name}最新估价`;
 }
 
 function setMode(mode) {
@@ -216,7 +236,8 @@ document.querySelector("#serviceButton").addEventListener("click", () => {
 });
 
 document.querySelector("#quoteButton").addEventListener("click", () => {
-  const price = formatPrice(grades[currentGrade].price);
+  const { rules } = PricingConfig.loadState();
+  const price = formatPrice(PricingConfig.calculate(grades[currentGrade].price, rules).final);
   showToast(`原型演示：已带入当前报价 ¥${price}，进入询高价流程`);
 });
 
@@ -226,6 +247,11 @@ document.querySelector("#backButton").addEventListener("click", () => {
 
 document.querySelectorAll("[data-tip]").forEach((button) => {
   button.addEventListener("click", () => showToast(button.dataset.tip));
+});
+
+window.addEventListener("pageshow", renderPrice);
+window.addEventListener("storage", (event) => {
+  if (event.key === PricingConfig.STORAGE_KEY) renderPrice();
 });
 
 renderPrice();

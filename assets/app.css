@@ -356,6 +356,73 @@ p {
   line-height: 1.45;
 }
 
+.price-breakdown {
+  margin-top: 11px;
+  padding: 9px 10px;
+  border: 1px solid #dcece7;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #f5fbf9, #f9fcfb);
+}
+
+.breakdown-formula {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  color: #596762;
+  font-size: 9.8px;
+  line-height: 1.4;
+}
+
+.breakdown-formula span {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.breakdown-formula b {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 690;
+  font-variant-numeric: tabular-nums;
+}
+
+.breakdown-formula i {
+  color: #8d9995;
+  font-size: 10px;
+  font-style: normal;
+}
+
+.breakdown-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px dashed #dce9e5;
+  color: #5d6b66;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.breakdown-meta span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breakdown-meta a {
+  flex: 0 0 auto;
+  color: var(--green-dark);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.breakdown-meta a:hover {
+  text-decoration: underline;
+}
+
 .condition-picker {
   padding-top: 12px;
   border-top: 1px dashed #e4eae7;

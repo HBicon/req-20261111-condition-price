@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0d7e6b" />
+    <meta
+      name="description"
+      content="价格段加价配置后台原型：按不同成色基础价格段配置额外叠加金额，并实时预览前台最新估价。"
+    />
+    <title>价格段加价配置｜回收运营后台</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d7e6b'/%3E%3Cpath d='M15 19h34v8H15zm0 16h15v9H15zm20 0h14v9H35z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="./assets/config.css?v=20261111-8" />
+    <script src="./assets/pricing.js?v=20261111-2" defer></script>
+    <script src="./assets/config.js?v=20261111-2" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <header class="topbar">
+      <a class="brand" href="./config.html" aria-label="回收运营后台首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M4 5h16v5H4zm0 9h8v5H4zm11 0h5v5h-5z" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="brand-copy"><strong>回收运营后台</strong><small>RECYCLE OPS</small></span>
+      </a>
+      <span class="environment"><i aria-hidden="true"></i>演示环境</span>
+      <div class="top-actions">
+        <a class="preview-link" href="./index.html">
+          前台报价预览
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+          </svg>
+        </a>
+        <span class="account"><span class="avatar">HB</span><span>运营管理员</span></span>
+      </div>
+    </header>
+
+    <div class="admin-layout">
+      <aside class="sidebar" aria-label="后台菜单">
+        <p class="nav-group-title">报价配置</p>
+        <nav class="side-nav">
+          <a class="nav-item" href="./index.html"><span class="nav-icon" aria-hidden="true">◫</span><span>成色价展示</span></a>
+          <a class="nav-item is-active" href="./config.html" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">＋</span>
+            <span>价格段加价</span>
+            <span class="nav-new">NEW</span>
+          </a>
+        </nav>
+        <div class="sidebar-note">
+          <span class="note-mark" aria-hidden="true">i</span>
+          <strong>最新估价计算</strong>
+          <p>成色基础价命中价格段后叠加配置金额，仅对启用中的规则生效。</p>
+        </div>
+      </aside>
+
+      <main class="main" id="main-content">
+        <nav class="breadcrumb" aria-label="面包屑">
+          <span>报价配置</span><i aria-hidden="true">/</i><strong aria-current="page">价格段加价</strong>
+        </nav>
+
+        <section class="page-heading" aria-labelledby="page-title">
+          <div>
+            <div class="title-line">
+              <h1 id="page-title">价格段加价配置</h1>
+              <span class="status-badge"><i aria-hidden="true"></i>前台已生效</span>
+            </div>
+            <p>按成色基础价配置不同价格段的额外叠加金额，前台以“最新估价”展示最终金额。</p>
+          </div>
+          <div class="heading-actions">
+            <button class="button secondary" id="resetRules" type="button">恢复默认</button>
+            <button class="button primary" id="addRule" type="button"><span aria-hidden="true">＋</span>新增价格段</button>
+          </div>
+        </section>
+
+        <section class="formula-banner" aria-label="最新估价计算规则">
+          <div class="formula-flow">
+            <span class="formula-node">成色基础价</span>
+            <i aria-hidden="true">＋</i>
+            <span class="formula-node accent">命中价格段加价</span>
+            <i aria-hidden="true">＝</i>
+            <strong class="formula-node result">前台最新估价</strong>
+          </div>
+          <p>价格段包含上下边界；同一基础价只命中一条启用规则；未命中时按基础价展示，不额外加价。</p>
+        </section>
+
+        <section class="metrics" aria-label="配置概览">
+          <article><span>启用规则</span><strong id="metricEnabled">6</strong><small>条价格段</small></article>
+          <article><span>覆盖成色</span><strong id="metricCoverage">5 / 5</strong><small>当前示例机型</small></article>
+          <article><span>今日命中</span><strong id="metricMatched">5</strong><small>档成色有加价</small></article>
+          <article><span>最近更新</span><strong class="metric-time" id="metricUpdated">今天</strong><small>配置立即生效</small></article>
+        </section>
+
+        <div class="content-grid">
+          <section class="panel rules-panel" aria-labelledby="rules-title">
+            <div class="panel-heading">
+              <div>
+                <h2 id="rules-title">加价规则</h2>
+                <p>编辑价格范围或加价金额，前台报价同步更新。</p>
+              </div>
+              <span class="rule-count"><b id="ruleCount">6</b> 条规则</span>
+            </div>
+
+            <div class="rule-list-head" aria-hidden="true">
+              <span>价格段</span>
+              <span>加价金额</span>
+              <span>命中成色</span>
+              <span>状态</span>
+              <span>操作</span>
+            </div>
+            <div class="rule-list" id="rulesList"></div>
+          </section>
+
+          <aside class="panel preview-panel" aria-labelledby="preview-title">
+            <div class="panel-heading">
+              <div>
+                <h2 id="preview-title">前台效果预览</h2>
+                <p>iPhone 16 · Z05471S0548</p>
+              </div>
+              <span class="live-badge"><i aria-hidden="true"></i>实时</span>
+            </div>
+            <div class="preview-list" id="previewList"></div>
+            <div class="preview-legend">
+              <span><i class="legend-dot base"></i>基础价</span>
+              <span><i class="legend-dot add"></i>加价</span>
+              <span><i class="legend-dot final"></i>最新估价</span>
+            </div>
+            <a class="preview-button" href="./index.html">
+              查看前台报价页
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 10h11M11 6l4 4-4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
+              </svg>
+            </a>
+            <p class="preview-note">配置修改保存在当前浏览器，用于静态原型演示，不会写入真实报价系统。</p>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <dialog class="rule-dialog" id="ruleDialog" aria-labelledby="rule-dialog-title">
+      <form id="ruleForm" novalidate>
+        <div class="dialog-header">
+          <div>
+            <p class="dialog-eyebrow">PRICE BAND RULE</p>
+            <h2 id="rule-dialog-title">新增价格段</h2>
+          </div>
+          <button class="icon-button" id="closeRuleDialog" type="button" aria-label="关闭价格段编辑">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="m5 5 10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.7" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="dialog-body">
+          <p class="dialog-intro">填写成色基础价的区间与该区间额外叠加的金额，保存后立即应用到前台最新估价。</p>
+          <div class="field-grid">
+            <label class="field">
+              <span>最低价 <b>*</b></span>
+              <span class="input-wrap"><i>¥</i><input id="ruleMin" name="min" type="number" inputmode="numeric" min="0" step="1" placeholder="0" required /></span>
+            </label>
+            <label class="field">
+              <span>最高价 <em>选填</em></span>
+              <span class="input-wrap"><i>¥</i><input id="ruleMax" name="max" type="number" inputmode="numeric" min="0" step="1" placeholder="留空表示不设上限" /></span>
+            </label>
+          </div>
+          <label class="field">
+            <span>额外叠加金额 <b>*</b></span>
+            <span class="input-wrap amount"><i>+ ¥</i><input id="ruleAmount" name="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="请输入加价金额" required /></span>
+          </label>
+          <label class="switch-field">
+            <span><strong>保存后立即启用</strong><small>停用规则不参与前台最新估价计算。</small></span>
+            <input id="ruleEnabled" name="enabled" type="checkbox" checked />
+            <span class="switch-ui" aria-hidden="true"></span>
+          </label>
+          <div class="formula-preview" id="dialogFormula">
+            <span>基础价 <b id="dialogBaseHint">4,650</b></span><i>＋</i><span>加价 <b id="dialogAmountHint">200</b></span><i>＝</i><strong id="dialogFinalHint">4,850</strong>
+          </div>
+          <p class="form-error" id="formError" role="alert" hidden></p>
+        </div>
+
+        <div class="dialog-footer">
+          <button class="button secondary" id="cancelRuleDialog" type="button">取消</button>
+          <button class="button primary" type="submit">保存并生效</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="confirm-dialog" id="confirmDialog" aria-labelledby="confirm-title">
+      <div class="confirm-icon" aria-hidden="true">!</div>
+      <h2 id="confirm-title">确认操作</h2>
+      <p id="confirmMessage"></p>
+      <div class="confirm-actions">
+        <button class="button secondary" id="confirmCancel" type="button">取消</button>
+        <button class="button danger" id="confirmSubmit" type="button">确认</button>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>
