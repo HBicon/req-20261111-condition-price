@@ -6,16 +6,16 @@
     <meta name="theme-color" content="#0d7e6b" />
     <meta
       name="description"
-      content="虚拟加价配置后台原型：按应用渠道配置估价金额区间、虚拟加价系数与封顶金额，支持子渠道继承并实时预览新估价。"
+      content="虚拟加价配置后台原型：按应用渠道配置估价金额区间、虚拟加价系数与封顶金额，支持子渠道继承。"
     />
     <title>虚拟加价配置｜回收运营后台</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d7e6b'/%3E%3Cpath d='M15 19h34v8H15zm0 16h15v9H15zm20 0h14v9H35z' fill='white'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="./assets/config.css?v=20261112-2" />
-    <script src="./assets/pricing.js?v=20261112-2" defer></script>
-    <script src="./assets/config.js?v=20261112-2" defer></script>
+    <link rel="stylesheet" href="./assets/config.css?v=20261112-3" />
+    <script src="./assets/pricing.js?v=20261112-3" defer></script>
+    <script src="./assets/config.js?v=20261112-3" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -31,8 +31,8 @@
       </a>
       <span class="environment"><i aria-hidden="true"></i>演示环境</span>
       <div class="top-actions">
-        <a class="preview-link" href="./index.html">
-          前台报价预览
+        <a class="doc-link" href="./index.html">
+          产品文档
           <svg viewBox="0 0 16 16" aria-hidden="true">
             <path d="M4 12 12 4M6 4h6v6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
           </svg>
@@ -45,7 +45,6 @@
       <aside class="sidebar" aria-label="后台菜单">
         <p class="nav-group-title">报价配置</p>
         <nav class="side-nav">
-          <a class="nav-item" href="./index.html"><span class="nav-icon" aria-hidden="true">◫</span><span>成色价展示</span></a>
           <a class="nav-item is-active" href="./config.html" aria-current="page">
             <span class="nav-icon" aria-hidden="true">＋</span>
             <span>虚拟加价配置</span>
@@ -55,7 +54,7 @@
         <div class="sidebar-note">
           <span class="note-mark" aria-hidden="true">i</span>
           <strong>子渠道继承</strong>
-          <p>父渠道规则自动应用到子渠道；子渠道配置同区间规则时，优先使用子渠道规则。</p>
+          <p>父渠道规则自动应用到子渠道；子渠道存在匹配规则时，优先使用子渠道规则。</p>
         </div>
       </aside>
 
@@ -68,9 +67,9 @@
           <div>
             <div class="title-line">
               <h1 id="page-title">虚拟加价配置</h1>
-              <span class="status-badge"><i aria-hidden="true"></i>前台已生效</span>
+              <span class="status-badge"><i aria-hidden="true"></i>配置规则生效</span>
             </div>
-            <p>按应用渠道配置估价金额区间、虚拟加价系数与封顶金额。子渠道自动继承父渠道规则，配置后前台额外展示新估价。</p>
+            <p>按应用渠道配置估价金额区间、虚拟加价系数与封顶金额。子渠道自动继承父渠道规则，已有前台估价时展示新估价。</p>
           </div>
           <div class="heading-actions">
             <button class="button secondary" id="resetRules" type="button">恢复默认</button>
@@ -86,7 +85,7 @@
             <i aria-hidden="true">+</i>
             <span class="formula-node accent">原估价</span>
             <i aria-hidden="true">＝</i>
-            <strong class="formula-node result">前台新估价</strong>
+            <strong class="formula-node result">新估价</strong>
           </div>
           <p>虚拟加价＝min［原估价最高值×(系数−1)，封顶金额］。区间价按最高值命中规则，区间首尾同步加价，最高值同步展示新金额。</p>
         </section>
@@ -103,7 +102,7 @@
             <div class="panel-heading">
               <div>
                 <h2 id="rules-title">虚拟加价规则</h2>
-                <p>同一渠道内区间不可重叠；子渠道规则优先于父渠道继承规则。</p>
+                <p>同一渠道内区间不可重叠；子渠道匹配规则优先于父渠道继承规则。</p>
               </div>
               <span class="rule-count"><b id="ruleCount">6</b> 条规则</span>
             </div>
@@ -119,33 +118,6 @@
             </div>
             <div class="rule-list" id="rulesList"></div>
           </section>
-
-          <aside class="panel preview-panel" aria-labelledby="preview-title">
-            <div class="panel-heading">
-              <div>
-                <h2 id="preview-title">前台效果预览</h2>
-                <p>iPhone 16 · Z05471S0548</p>
-              </div>
-              <span class="live-badge"><i aria-hidden="true"></i>实时</span>
-            </div>
-            <label class="preview-channel-row">
-              <span>预览应用渠道</span>
-              <select id="previewChannel" aria-label="选择预览应用渠道"></select>
-            </label>
-            <div class="preview-list" id="previewList"></div>
-            <div class="preview-legend">
-              <span><i class="legend-dot base"></i>原估价</span>
-              <span><i class="legend-dot add"></i>虚拟加价</span>
-              <span><i class="legend-dot final"></i>新估价</span>
-            </div>
-            <a class="preview-button" href="./index.html">
-              查看前台报价页
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M4 10h11M11 6l4 4-4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
-              </svg>
-            </a>
-            <p class="preview-note">配置保存在当前浏览器，用于静态原型演示，不会写入真实报价系统。</p>
-          </aside>
         </div>
       </main>
     </div>
@@ -194,7 +166,7 @@
             </label>
           </div>
           <label class="switch-field">
-            <span><strong>保存后立即启用</strong><small>停用规则不参与前台新估价计算。</small></span>
+            <span><strong>保存后立即启用</strong><small>停用规则不参与新估价计算。</small></span>
             <input id="ruleEnabled" name="enabled" type="checkbox" checked />
             <span class="switch-ui" aria-hidden="true"></span>
           </label>

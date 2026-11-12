@@ -2,323 +2,465 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#12ae95" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a806c" />
     <meta
       name="description"
-      content="回收报价详情页成色价展示原型：按应用渠道的虚拟加价系数与封顶金额，展示靓机、小花、大花、外爆、内爆五档原估价和新估价。"
+      content="成色价展示与虚拟加价配置产品文档：应用渠道、估价金额区间、虚拟加价系数、封顶金额、子渠道继承、新估价计算与验收标准。"
     />
-    <title>成色价展示｜回收报价原型</title>
+    <title>虚拟加价配置产品文档｜成色价展示</title>
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312ae95'/%3E%3Cpath d='M19 42h26v7H19zm3-10h20v6H22zm5-12h10v6H27z' fill='white'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a806c'/%3E%3Cpath d='M18 17h28v7H18zm0 12h13v7H18zm17 0h11v7H35zm-17 12h28v7H18z' fill='white'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="./assets/app.css?v=20261112-2" />
-    <script src="./assets/pricing.js?v=20261112-2" defer></script>
-    <script src="./assets/app.js?v=20261112-2" defer></script>
+    <link rel="stylesheet" href="./assets/doc.css?v=20261112-5" />
   </head>
   <body>
-    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <a class="skip-link" href="#doc-content">跳到文档正文</a>
 
-    <div class="app-shell">
-      <header class="detail-header">
-        <div class="header-row">
-          <button class="header-button" id="backButton" type="button" aria-label="返回上一页">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m15 4-7 8 7 8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" />
-            </svg>
-          </button>
-          <div class="device-heading">
-            <h1>iPhone 16 <span aria-hidden="true">|</span> Z05471S0548</h1>
-            <p>已读取设备信息 · 报价实时更新</p>
-          </div>
-          <span class="header-status"><i aria-hidden="true"></i>检测完成</span>
-        </div>
-      </header>
-
-      <main class="page-content" id="main-content">
-        <section class="price-card" aria-labelledby="price-card-title">
-          <div class="price-card-head">
-            <div>
-              <p class="eyebrow">后台配置 · 新估价</p>
-              <h2 id="price-card-title">价格详情</h2>
-            </div>
-            <div class="display-switch" role="group" aria-label="价格展示方式">
-              <button id="estimateModeButton" type="button" data-price-mode="estimate" aria-pressed="false">预估价</button>
-              <button id="conditionModeButton" class="is-active" type="button" data-price-mode="condition" aria-pressed="true">
-                成色价
-                <span class="new-badge">新</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="channel-context" aria-label="当前估价应用渠道">
-            <label class="channel-selector" for="channelSelect">
-              <span>应用渠道</span>
-              <span class="channel-select-shell">
-                <select id="channelSelect" aria-label="选择应用渠道">
-                  <option value="app">有得卖 App</option>
-                </select>
-                <svg viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                </svg>
-              </span>
-            </label>
-            <span class="channel-context-note" id="channelContextNote">有得卖 App · 本渠道规则</span>
-          </div>
-
-          <div class="price-focus">
-            <p class="price-kicker">
-              <span class="status-dot" aria-hidden="true"></span>
-              <span id="priceKicker">新估价 · 靓机</span>
-            </p>
-            <div class="price-line">
-              <span class="currency" aria-hidden="true">¥</span>
-              <strong class="price-value" id="priceValue">5,123</strong>
-              <span class="delta-badge" id="deltaBadge">虚拟加价 +¥200</span>
-            </div>
-            <p class="range-note" id="rangeNote" hidden></p>
-            <p class="price-description" id="priceDescription">屏幕、边框、背板状态良好</p>
-            <div class="price-breakdown" aria-live="polite">
-              <div class="breakdown-formula">
-                <span>原估价 <b id="basePriceValue">¥4,923</b></span>
-                <i aria-hidden="true">+</i>
-                <span>虚拟加价 <b id="bandExtraValue">+¥200</b></span>
-                <i aria-hidden="true">=</i>
-                <span>新估价 <b id="newEstimateValue">¥5,123</b></span>
-              </div>
-              <div class="breakdown-meta">
-                <span class="breakdown-source">
-                  <strong id="channelSourceText">有得卖 App · 本渠道规则</strong>
-                  <small id="bandMatchText">命中 ¥4,000–¥4,999 · 系数 1.05 · 封顶 ¥200</small>
-                </span>
-                <a href="./config.html">后台配置 ›</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="condition-picker" id="conditionPicker">
-            <div class="condition-heading">
-              <span>五档成色新估价</span>
-              <button class="text-button" id="openGradeDialog" type="button">
-                判定标准
-                <svg viewBox="0 0 16 16" aria-hidden="true">
-                  <path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
-                </svg>
-              </button>
-            </div>
-            <div class="condition-grid" id="conditionGrid" role="radiogroup" aria-label="选择成色查看报价">
-              <button class="condition-option is-selected" type="button" role="radio" aria-checked="true" data-grade="excellent" tabindex="0">
-                <span class="grade-dot" aria-hidden="true"></span>
-                <span class="grade-name">靓机</span>
-                <strong class="grade-price" data-grade-price="excellent">5,123</strong>
-                <small class="grade-original" data-grade-original="excellent">原价 ¥4,923</small>
-              </button>
-              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="minor" tabindex="-1">
-                <span class="grade-dot" aria-hidden="true"></span>
-                <span class="grade-name">小花</span>
-                <strong class="grade-price" data-grade-price="minor">4,850</strong>
-                <small class="grade-original" data-grade-original="minor">原价 ¥4,650</small>
-              </button>
-              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="major" tabindex="-1">
-                <span class="grade-dot" aria-hidden="true"></span>
-                <span class="grade-name">大花</span>
-                <strong class="grade-price" data-grade-price="major">4,380</strong>
-                <small class="grade-original" data-grade-original="major">原价 ¥4,180</small>
-              </button>
-              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="outer" tabindex="-1">
-                <span class="grade-dot" aria-hidden="true"></span>
-                <span class="grade-name">外爆</span>
-                <strong class="grade-price" data-grade-price="outer">3,358</strong>
-                <small class="grade-original" data-grade-original="outer">原价 ¥3,260</small>
-              </button>
-              <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="inner" tabindex="-1">
-                <span class="grade-dot" aria-hidden="true"></span>
-                <span class="grade-name">内爆</span>
-                <strong class="grade-price" data-grade-price="inner">2,499</strong>
-                <small class="grade-original" data-grade-original="inner">原价 ¥2,450</small>
-              </button>
-            </div>
-          </div>
-
-          <div class="estimate-panel" id="estimatePanel" hidden>
-            <div class="trend-block">
-              <span>预估下周</span>
-              <strong>↘ 跌 383 元</strong>
-            </div>
-            <p id="estimateHint">已按当前应用渠道叠加虚拟加价，建议今天锁定报价。</p>
-          </div>
-
-          <div class="card-footnote">
-            <svg viewBox="0 0 16 16" aria-hidden="true">
-              <circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.2" />
-              <path d="M8 7.1v3.5M8 5.1v.1" stroke="currentColor" stroke-linecap="round" stroke-width="1.3" />
-            </svg>
-            <span id="footnoteText">新估价＝原估价＋虚拟加价，最终以质检结果为准</span>
-          </div>
-        </section>
-
-        <section class="inspection-card" aria-labelledby="inspection-title">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">AI 外观识别</p>
-              <h2 id="inspection-title">检测到 2 项外观情况</h2>
-            </div>
-            <span class="result-pill">影响成色</span>
-          </div>
-          <div class="appearance-tags" role="list" aria-label="已识别外观情况">
-            <span role="listitem">屏幕明显划痕 / 凸点 / 掉漆 / 折痕</span>
-            <span role="listitem">屏幕破损</span>
-          </div>
-          <p class="inspection-hint">如实际机况与识别结果不一致，请在询高价时重新选择。</p>
-        </section>
-
-        <section class="form-card" aria-labelledby="screen-title">
-          <div class="section-heading compact">
-            <div>
-              <h2 id="screen-title"><span class="title-bar" aria-hidden="true"></span>屏幕显示</h2>
-              <p>请选择最符合实际机况的一项</p>
-            </div>
-            <button class="help-button" type="button" data-tip="屏幕显示状态会影响成色及最终回收价" aria-label="屏幕显示说明">?</button>
-          </div>
-          <div class="choice-list" data-choice-group="screen" data-multi="false" role="group" aria-label="屏幕显示状态">
-            <button class="choice-chip is-selected" type="button" aria-pressed="true">显示完美无瑕疵</button>
-            <button class="choice-chip" type="button" aria-pressed="false">亮点 / 色差 / 轻微发黄</button>
-            <button class="choice-chip" type="button" aria-pressed="false">老化 / 色斑</button>
-            <button class="choice-chip" type="button" aria-pressed="false">显示不正常 / 漏液 / 断线</button>
-            <button class="choice-chip" type="button" aria-pressed="false">完全不显示 / 全花屏</button>
-          </div>
-        </section>
-
-        <section class="form-card" aria-labelledby="battery-title">
-          <div class="section-heading compact">
-            <div>
-              <h2 id="battery-title"><span class="title-bar" aria-hidden="true"></span>电池健康度</h2>
-              <p>以系统读取值为准</p>
-            </div>
-            <span class="battery-value">95%</span>
-          </div>
-          <div class="choice-list" data-choice-group="battery" data-multi="false" role="group" aria-label="电池健康度">
-            <button class="choice-chip is-selected" type="button" aria-pressed="true">电池健康 95%–100%</button>
-            <button class="choice-chip" type="button" aria-pressed="false">电池健康 90%–95%</button>
-            <button class="choice-chip" type="button" aria-pressed="false">电池健康 81%–90%</button>
-            <button class="choice-chip" type="button" aria-pressed="false">电池健康 81% 以下</button>
-          </div>
-        </section>
-
-        <section class="form-card function-card" aria-labelledby="function-title">
-          <button class="section-heading compact function-toggle" id="functionToggle" type="button" aria-expanded="true" aria-controls="functionBody">
-            <span>
-              <span class="function-title-row">
-                <span class="function-title" id="function-title">功能异常</span>
-                <span class="optional-label">可多选</span>
-              </span>
-              <span class="section-subtitle">如有异常请如实选择，避免复检差价</span>
-            </span>
-            <span class="collapse-icon" aria-hidden="true">
-              <svg viewBox="0 0 16 16">
-                <path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" />
-              </svg>
-            </span>
-          </button>
-
-          <div class="function-body" id="functionBody">
-            <div class="warning-banner">
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" stroke-width="1.4" />
-                <path d="M10 5.8v5M10 13.7v.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" />
-              </svg>
-              <p>异常选项会影响价格及差错追责，请仔细核验。</p>
-            </div>
-            <div class="choice-list function-list" data-choice-group="function" data-multi="true" role="group" aria-label="功能异常，可多选">
-              <button class="choice-chip" type="button" aria-pressed="false">不能正常开机 / 反复重启</button>
-              <button class="choice-chip" type="button" aria-pressed="false">ID / 账户锁无法解除</button>
-              <button class="choice-chip" type="button" aria-pressed="false">触屏失灵</button>
-              <button class="choice-chip" type="button" aria-pressed="false">外屏维修 / 脱胶 / 气泡</button>
-              <button class="choice-chip" type="button" aria-pressed="false">屏幕维修</button>
-              <button class="choice-chip" type="button" aria-pressed="false">通话异常</button>
-              <button class="choice-chip" type="button" aria-pressed="false">WiFi / 蓝牙信号弱或无</button>
-              <button class="choice-chip" type="button" aria-pressed="false">有拆修或故障</button>
-              <button class="choice-chip" type="button" aria-pressed="false">有网络锁</button>
-              <button class="choice-chip" type="button" aria-pressed="false">Face ID 不正常</button>
-              <button class="choice-chip" type="button" aria-pressed="false">摄像头有斑</button>
-              <button class="choice-chip" type="button" aria-pressed="false">前摄像头不正常</button>
-              <button class="choice-chip" type="button" aria-pressed="false">后摄像头不正常</button>
-              <button class="choice-chip" type="button" aria-pressed="false">按键不正常</button>
-              <button class="choice-chip" type="button" aria-pressed="false">充电 ≤81%</button>
-              <button class="choice-chip" type="button" aria-pressed="false">充电或电池异常 / 更换电池</button>
-            </div>
-          </div>
-        </section>
-
-        <p class="legal-note">提交后，最终回收价以门店质检结果为准。新估价已按应用渠道叠加虚拟加价，成色判定与功能异常不可重复计价。</p>
-      </main>
-
-      <button class="service-button" id="serviceButton" type="button" aria-label="联系在线客服">
-        <span class="service-icon" aria-hidden="true">
+    <header class="doc-topbar">
+      <a class="doc-brand" href="./index.html" aria-label="虚拟加价配置产品文档首页">
+        <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 24 24">
-            <path d="M5.5 13.5v-2a6.5 6.5 0 0 1 13 0v2" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8" />
-            <path d="M5.5 12.5h1.2c.7 0 1.3.6 1.3 1.3v3.4c0 .7-.6 1.3-1.3 1.3H5.5zM18.5 12.5h-1.2c-.7 0-1.3.6-1.3 1.3v3.4c0 .7.6 1.3 1.3 1.3h1.2z" fill="currentColor" />
-            <path d="M15 19c-.6.8-1.3 1.2-2.4 1.2H11" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.7" />
+            <path d="M5 4h14v4H5zm0 6h6v4H5zm8 0h6v4h-6zM5 16h14v4H5z" fill="currentColor" />
           </svg>
         </span>
-        客服
-      </button>
+        <span class="brand-copy"><strong>成色价展示产品文档</strong><small>PRODUCT DOCUMENT</small></span>
+      </a>
+      <nav class="doc-topnav" aria-label="文档快捷入口">
+        <a href="./产品文档.md">Markdown 原文</a>
+        <a class="primary-link" href="./config.html">查看后台原型</a>
+      </nav>
+    </header>
 
-      <footer class="sticky-footer">
-        <div class="sticky-summary" aria-live="polite">
-          <span id="stickyLabel">靓机新估价</span>
-          <strong id="stickyPrice">¥5,123</strong>
+    <div class="doc-layout">
+      <aside class="doc-sidebar" aria-label="本文目录">
+        <p class="sidebar-label">本文目录</p>
+        <nav>
+          <ol>
+            <li><a href="#overview">背景与目标</a></li>
+            <li><a href="#scope">本期范围</a></li>
+            <li><a href="#users">用户与场景</a></li>
+            <li><a href="#menu">后台菜单结构</a></li>
+            <li><a href="#fields">字段与校验</a></li>
+            <li><a href="#inheritance">渠道继承</a></li>
+            <li><a href="#calculation">计算规则</a></li>
+            <li><a href="#operations">操作规则</a></li>
+            <li><a href="#exceptions">异常与边界</a></li>
+            <li><a href="#permissions">权限与审计</a></li>
+            <li><a href="#integration">前台接入</a></li>
+            <li><a href="#acceptance">验收标准</a></li>
+            <li><a href="#defaults">默认配置</a></li>
+            <li><a href="#pending">待确认项</a></li>
+            <li><a href="#versions">版本记录</a></li>
+          </ol>
+        </nav>
+      </aside>
+
+      <main class="doc-main" id="doc-content">
+        <section class="doc-hero" aria-labelledby="doc-title">
+          <p class="hero-eyebrow">REQ-20261111-001 · PRODUCT SPEC</p>
+          <h1 id="doc-title">成色价展示与虚拟加价配置产品文档</h1>
+          <p class="hero-summary">
+            在后台按应用渠道配置估价金额区间、虚拟加价系数和封顶金额，并支持子渠道逐级继承。已有前台估价系统读取配置后额外展示新估价，不重做前台报价页面。
+          </p>
+          <div class="hero-meta" aria-label="文档元信息">
+            <span class="meta-chip">版本 <strong>v1.1</strong></span>
+            <span class="meta-chip status">状态 <strong>评审稿</strong></span>
+            <span class="meta-chip">更新时间 <strong>2026-11-12</strong></span>
+            <span class="meta-chip">交付物 <strong>后台原型 + 产品文档</strong></span>
+          </div>
+        </section>
+
+        <div class="doc-content">
+          <section class="doc-section" id="overview">
+            <p class="section-kicker">01 · Background</p>
+            <h2>背景与目标</h2>
+            <h3>背景</h3>
+            <p>
+              现有回收估价已经能够返回成色价，但不同应用渠道需要独立控制加价幅度。当前缺少统一的后台配置能力，无法按渠道和估价金额段配置虚拟加价，也无法控制单笔加价上限。
+            </p>
+            <h3>产品目标</h3>
+            <ul>
+              <li>运营人员可在后台按应用渠道配置估价金额区间、虚拟加价系数和封顶金额。</li>
+              <li>子渠道未配置规则或未命中规则时，可逐级继承父渠道规则。</li>
+              <li>已有前台估价系统可在原估价基础上额外展示新估价，不改变原有报价主流程。</li>
+              <li>单值价和区间价采用同一套计算口径；区间价按最高值命中规则，并将加价金额同步应用到区间首尾。</li>
+            </ul>
+            <div class="doc-callout">
+              <span class="callout-mark" aria-hidden="true">i</span>
+              <div>
+                <strong>本次交付边界</strong>
+                <p>不输出前台报价页面，后台配置页也不提供前台效果预览。前台页面由现有系统承接，仅按本文档定义的金额口径和接口字段接入。</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="doc-section" id="scope">
+            <p class="section-kicker">02 · Scope</p>
+            <h2>本期范围</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>本期包含</th><th>明确不做</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>后台“虚拟加价配置”菜单及规则列表</td><td>不新增或重做前台报价页面</td></tr>
+                  <tr><td>新增、编辑、启停、删除、恢复默认规则</td><td>不提供后台“前台效果预览”面板</td></tr>
+                  <tr><td>应用渠道父子层级继承</td><td>不提供前台页面跳转或前台报价预览入口</td></tr>
+                  <tr><td>原估价、虚拟加价、新估价的计算规则</td><td>不提供定时生效、灰度发布和多人审批</td></tr>
+                  <tr><td>对已有前台估价系统的展示与接入约定</td><td>不在本原型中接入真实报价、渠道或配置服务</td></tr>
+                  <tr><td>权限沿用、操作审计和异常处理要求</td><td>不包含优惠券、权益价或其他非估价加价能力</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="users">
+            <p class="section-kicker">03 · Users</p>
+            <h2>用户与使用场景</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>角色</th><th>使用场景</th><th>核心诉求</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>报价配置运营</strong></td><td>在后台维护各渠道的虚拟加价规则</td><td>快速配置、明确继承关系、避免区间冲突</td></tr>
+                  <tr><td><strong>报价审核人员</strong></td><td>查看当前规则及启停状态</td><td>规则来源清晰、可追溯</td></tr>
+                  <tr><td><strong>估价用户</strong></td><td>在已有前台报价页面查看估价</td><td>能看到原估价、虚拟加价和新估价，区间价口径一致</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="menu">
+            <p class="section-kicker">04 · Back Office</p>
+            <h2>后台菜单与页面结构</h2>
+            <div class="info-grid">
+              <div class="info-card"><span>菜单路径</span><strong>报价配置 › 虚拟加价配置</strong></div>
+              <div class="info-card"><span>页面标题</span><strong>虚拟加价配置</strong></div>
+            </div>
+            <p>页面不包含“前台效果预览”“查看前台报价页”或任何前台页面入口。</p>
+            <h3>页面区域</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>区域</th><th>内容</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>顶部操作区</td><td>恢复默认、新增规则</td></tr>
+                  <tr><td>计算规则说明</td><td>展示虚拟加价公式与区间价处理口径</td></tr>
+                  <tr><td>配置概览</td><td>启用规则数、已配置渠道数、子渠道继承数、最近更新时间</td></tr>
+                  <tr><td>规则列表</td><td>按应用渠道展示金额区间、系数、封顶、状态及操作</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>规则列表列</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>列名</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>应用渠道</td><td>展示渠道名称、完整路径及继承标签</td></tr>
+                  <tr><td>估价金额最低值</td><td>原估价命中区间的下限，包含该值</td></tr>
+                  <tr><td>估价金额最高值</td><td>原估价命中区间的上限，包含该值；为空表示不设上限</td></tr>
+                  <tr><td>虚拟加价系数</td><td>用于计算加价金额，保留两位小数</td></tr>
+                  <tr><td>封顶金额</td><td>单条规则可加价的最高金额</td></tr>
+                  <tr><td>状态</td><td>启用或停用</td></tr>
+                  <tr><td>操作</td><td>编辑、删除</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>列表默认按渠道树顺序排列，同一渠道内按最低值升序排列。</p>
+          </section>
+
+          <section class="doc-section" id="fields">
+            <p class="section-kicker">05 · Fields</p>
+            <h2>字段定义与校验</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>字段</th><th>类型</th><th>必填</th><th>规则</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>应用渠道</strong></td><td>下拉选择</td><td>是</td><td>必须选择有效渠道</td><td>支持父渠道和子渠道，展示完整层级</td></tr>
+                  <tr><td><strong>估价金额最低值</strong></td><td>整数</td><td>是</td><td><code>≥ 0</code></td><td>原估价命中区间的下限</td></tr>
+                  <tr><td><strong>估价金额最高值</strong></td><td>整数</td><td>否</td><td>大于最低值；留空表示不设上限</td><td>原估价命中区间的上限</td></tr>
+                  <tr><td><strong>虚拟加价系数</strong></td><td>小数</td><td>是</td><td><code>&gt; 1</code> 且 <code>≤ 9.99</code>，最多两位小数</td><td><code>1.05</code> 表示按原估价最高值的 5% 计算加价</td></tr>
+                  <tr><td><strong>封顶金额</strong></td><td>整数</td><td>是</td><td><code>≥ 0</code></td><td>计算结果超过封顶时，仅按封顶金额加价</td></tr>
+                  <tr><td><strong>保存后立即启用</strong></td><td>开关</td><td>否</td><td>默认开启</td><td>关闭时保存为停用规则，不参与估价</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>表单反馈</h3>
+            <ul>
+              <li>字段为空、非整数、区间上下限错误或系数越界时，阻止提交并展示错误原因。</li>
+              <li>同一渠道内启用规则区间重叠时，阻止保存并提示发生冲突的规则区间。</li>
+              <li>不同渠道允许配置相同或重叠的金额区间。</li>
+              <li>单条规则弹窗内保留“规则试算摘要”，仅用于校验当前输入，不属于前台页面预览功能。</li>
+            </ul>
+          </section>
+
+          <section class="doc-section" id="inheritance">
+            <p class="section-kicker">06 · Inheritance</p>
+            <h2>应用渠道与子渠道继承</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>应用渠道</th><th>父渠道</th><th>默认规则</th><th>继承行为</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>有得卖 App</strong></td><td>无</td><td>0–2,999：1.02 / ¥60；3,000–3,999：1.03 / ¥100；4,000–4,999：1.05 / ¥200；5,000 以上：1.06 / ¥300</td><td>其下子渠道可继承</td></tr>
+                  <tr><td><strong>微信小程序</strong></td><td>有得卖 App</td><td>4,000–4,999：1.04 / ¥180</td><td><span class="tag override">子渠道专属优先</span> 其他区间继承 App</td></tr>
+                  <tr><td><strong>支付宝小程序</strong></td><td>有得卖 App</td><td>无</td><td>默认继承 App</td></tr>
+                  <tr><td><strong>抖音小程序</strong></td><td>有得卖 App</td><td>无</td><td>默认继承 App</td></tr>
+                  <tr><td><strong>门店柜机</strong></td><td>无</td><td>0–5,999：1.03 / ¥150</td><td>其下子渠道可继承</td></tr>
+                  <tr><td><strong>门店平板</strong></td><td>门店柜机</td><td>无</td><td>默认继承门店柜机</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>继承优先级</h3>
+            <div class="rule-order">
+              <div class="rule-step"><span class="step-number">1</span><div><strong>当前渠道优先</strong><p>先使用当前应用渠道自身的启用规则匹配原估价最高值。</p></div></div>
+              <div class="rule-step"><span class="step-number">2</span><div><strong>逐级向上继承</strong><p>当前渠道未命中时，按父渠道逐级向上匹配。</p></div></div>
+              <div class="rule-step"><span class="step-number">3</span><div><strong>命中即停止</strong><p>任一上级渠道命中后，使用该规则的系数和封顶金额。</p></div></div>
+              <div class="rule-step"><span class="step-number">4</span><div><strong>无规则不加价</strong><p>所有层级均未命中时，不计算虚拟加价，仅展示原估价。</p></div></div>
+            </div>
+            <p>子渠道的任一匹配规则优先于父渠道规则，不要求父子渠道的金额区间完全一致。子渠道规则停用或删除后，将自动回退到父渠道规则。</p>
+          </section>
+
+          <section class="doc-section" id="calculation">
+            <p class="section-kicker">07 · Calculation</p>
+            <h2>计算规则</h2>
+            <div class="formula-box">
+              <div class="formula-line">
+                <span>原估价最高值 × (系数−1)</span><i>→</i><span>四舍五入</span><i>→</i><span>封顶控制</span><i>+</i><span>原估价</span><i>=</i><span class="result">新估价</span>
+              </div>
+              <p class="formula-note">
+                虚拟加价 = min(round(原估价最高值 × (虚拟加价系数 − 1)), 封顶金额)。区间价使用最高值命中规则，并将同一加价金额同步加到区间首尾。
+              </p>
+            </div>
+            <h3>单值与区间价</h3>
+            <ul>
+              <li>单值估价：原估价最低值等于最高值，新估价为原估价加虚拟加价。</li>
+              <li>区间价：以原估价最高值匹配渠道规则，同一虚拟加价金额同步加到区间最低值和最高值。</li>
+              <li>区间价主金额展示新估价最高值；如有区间形态，同时展示完整的新估价区间。</li>
+              <li>未命中任何启用规则：不展示虚拟加价和新估价加价标识，直接使用原估价。</li>
+            </ul>
+            <h3>计算示例</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>场景</th><th>原估价</th><th>命中规则</th><th>原始加价</th><th>封顶后加价</th><th>新估价</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>有得卖 App · 靓机</td><td>¥4,923</td><td>4,000–4,999；1.05；封顶 ¥200</td><td>246</td><td>200</td><td><strong>¥5,123</strong></td></tr>
+                  <tr><td>微信小程序 · 小花</td><td>¥4,650</td><td>4,000–4,999；1.04；封顶 ¥180</td><td>186</td><td>180</td><td><strong>¥4,830</strong></td></tr>
+                  <tr><td>微信小程序 · 大花</td><td>¥4,180</td><td>4,000–4,999；1.04；封顶 ¥180</td><td>167</td><td>167</td><td><strong>¥4,347</strong></td></tr>
+                  <tr><td>微信小程序 · 外爆继承 App</td><td>¥3,260</td><td>3,000–3,999；1.03；封顶 ¥100</td><td>98</td><td>98</td><td><strong>¥3,358</strong></td></tr>
+                  <tr><td>门店平板继承门店柜机</td><td>¥4,500</td><td>0–5,999；1.03；封顶 ¥150</td><td>135</td><td>135</td><td><strong>¥4,635</strong></td></tr>
+                  <tr><td>区间价 · App</td><td>¥4,800–¥4,923</td><td>4,000–4,999；1.05；封顶 ¥200</td><td>246</td><td>200</td><td><strong>¥5,000–¥5,123</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="operations">
+            <p class="section-kicker">08 · Operations</p>
+            <h2>操作规则</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>操作</th><th>规则</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><strong>新增规则</strong></td><td>打开弹窗，默认渠道为有得卖 App；保存成功后立即生效</td></tr>
+                  <tr><td><strong>编辑规则</strong></td><td>回填原字段；保存后替换原规则并立即生效</td></tr>
+                  <tr><td><strong>启用 / 停用</strong></td><td>通过列表开关切换；启用前再次校验同渠道区间是否重叠</td></tr>
+                  <tr><td><strong>删除规则</strong></td><td>二次确认后删除；删除后按父渠道继承规则或不再加价</td></tr>
+                  <tr><td><strong>恢复默认</strong></td><td>二次确认后恢复系统默认渠道规则；影响全部配置，需记录审计</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>状态规则</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>状态</th><th>是否参与计算</th><th>可执行操作</th><th>说明</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><span class="tag">启用中</span></td><td>是</td><td>编辑、停用、删除</td><td>按规则优先级参与匹配</td></tr>
+                  <tr><td><span class="tag neutral">已停用</span></td><td>否</td><td>编辑、启用、删除</td><td>不参与匹配，子渠道继续向上继承</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>配置保存后立即影响后续估价请求；已经生成的历史报价不回溯修改。</p>
+          </section>
+
+          <section class="doc-section" id="exceptions">
+            <p class="section-kicker">09 · Edge Cases</p>
+            <h2>异常处理与边界</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>场景</th><th>处理方式</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>区间上下限非法</td><td>阻止保存，提示最高值必须大于最低值</td></tr>
+                  <tr><td>系数不在允许范围</td><td>阻止保存，提示系数需大于 1 且不超过 9.99</td></tr>
+                  <tr><td>封顶金额缺失或为负数</td><td>阻止保存，提示封顶金额需为不小于 0 的整数</td></tr>
+                  <tr><td>同渠道区间重叠</td><td>阻止保存或启用，并提示冲突区间</td></tr>
+                  <tr><td>不同渠道区间重叠</td><td>允许，渠道之间相互独立</td></tr>
+                  <tr><td>原估价为空或非数字</td><td>不计算加价，由现有报价链路处理数据异常，不展示误导性新估价</td></tr>
+                  <tr><td>配置服务读取失败</td><td>降级使用原估价或不展示新估价，不缓存错误加价结果，并记录告警</td></tr>
+                  <tr><td>规则被停用或删除</td><td>后续估价回退父渠道规则；无父级命中时不加价</td></tr>
+                  <tr><td>父子渠道同时命中</td><td>子渠道规则优先</td></tr>
+                  <tr><td>封顶金额为 0</td><td>允许保存，实际加价为 0，按未产生加价处理</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="permissions">
+            <p class="section-kicker">10 · Governance</p>
+            <h2>权限、审计与数据记录</h2>
+            <ul>
+              <li>权限沿用现有后台“报价配置”菜单权限体系，本期不新增独立角色。</li>
+              <li>仅具备报价配置权限的运营人员可新增、编辑、启停、删除和恢复默认规则。</li>
+              <li>每次变更记录操作人、操作时间、渠道、变更前后字段、变更类型和结果。</li>
+              <li>历史估价按生成时的规则结果保留，不因后续规则变更而重算。</li>
+              <li>原型使用浏览器 <code>localStorage</code> 仅用于演示；正式系统必须接入服务端配置存储和接口。</li>
+            </ul>
+          </section>
+
+          <section class="doc-section" id="integration">
+            <p class="section-kicker">11 · Integration</p>
+            <h2>前台接入约定</h2>
+            <div class="doc-callout">
+              <span class="callout-mark" aria-hidden="true">i</span>
+              <div><strong>前台页面由现有系统承接</strong><p>本期不输出前台页面。以下字段用于已有估价系统与后台虚拟加价配置对接。</p></div>
+            </div>
+            <h3>输入字段</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>说明</th></tr></thead>
+                <tbody>
+                  <tr><td><code>channelId</code></td><td>当前应用渠道 ID</td></tr>
+                  <tr><td><code>originalLow</code></td><td>原估价最低值</td></tr>
+                  <tr><td><code>originalHigh</code></td><td>原估价最高值；单值价时与最低值相同</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>输出字段</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>字段</th><th>说明</th></tr></thead>
+                <tbody>
+                  <tr><td><code>matched</code></td><td>是否命中启用规则</td></tr>
+                  <tr><td><code>sourceChannelId</code></td><td>最终生效规则的来源渠道</td></tr>
+                  <tr><td><code>inherited</code></td><td>是否来自父渠道继承</td></tr>
+                  <tr><td><code>extra</code></td><td>封顶后的虚拟加价金额</td></tr>
+                  <tr><td><code>newLow</code></td><td>新估价最低值</td></tr>
+                  <tr><td><code>newHigh</code></td><td>新估价最高值</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>前台展示应同时保留原估价口径，并额外展示新估价。接口失败或未命中规则时，不得展示未经确认的加价金额。</p>
+          </section>
+
+          <section class="doc-section" id="acceptance">
+            <p class="section-kicker">12 · Acceptance</p>
+            <h2>验收标准</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>场景</th><th>操作</th><th>预期结果</th></tr></thead>
+                <tbody>
+                  <tr><td>规则新增</td><td>App 新增 4,000–4,999、系数 1.05、封顶 ¥200</td><td>保存成功，列表立即展示新规则</td></tr>
+                  <tr><td>同渠道冲突</td><td>App 新增 4,100–4,200</td><td>保存被阻止，提示与 4,000–4,999 规则重叠</td></tr>
+                  <tr><td>跨渠道同区间</td><td>支付宝小程序新增 4,000–4,999</td><td>允许保存，不与 App 规则冲突</td></tr>
+                  <tr><td>封顶计算</td><td>App 原估价 ¥4,923 命中 1.05 / ¥200</td><td>加价 ¥200，新估价 ¥5,123</td></tr>
+                  <tr><td>子渠道优先</td><td>微信小程序原估价 ¥4,650 命中 1.04 / ¥180</td><td>使用微信规则，新估价 ¥4,830</td></tr>
+                  <tr><td>父渠道继承</td><td>微信小程序原估价 ¥3,260</td><td>继承 App 1.03 / ¥100，新估价 ¥3,358</td></tr>
+                  <tr><td>停用回退</td><td>停用微信小程序 4,000–4,999 规则，查询 ¥4,650</td><td>回退 App 1.05 / ¥200，新估价 ¥4,850</td></tr>
+                  <tr><td>区间价</td><td>原估价 ¥4,800–¥4,923，App 规则封顶 ¥200</td><td>新估价 ¥5,000–¥5,123</td></tr>
+                  <tr><td>未命中规则</td><td>查询无任何可匹配规则的金额</td><td>仅展示原估价，不显示虚拟加价</td></tr>
+                  <tr><td>删除规则</td><td>删除门店柜机规则后查询门店平板</td><td>门店平板不再继承该规则，按无规则处理</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="defaults">
+            <p class="section-kicker">13 · Defaults</p>
+            <h2>默认配置汇总</h2>
+            <h3>有得卖 App</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>最低值</th><th>最高值</th><th>系数</th><th>封顶</th></tr></thead>
+                <tbody>
+                  <tr><td>¥0</td><td>¥2,999</td><td>1.02</td><td>¥60</td></tr>
+                  <tr><td>¥3,000</td><td>¥3,999</td><td>1.03</td><td>¥100</td></tr>
+                  <tr><td>¥4,000</td><td>¥4,999</td><td>1.05</td><td>¥200</td></tr>
+                  <tr><td>¥5,000</td><td>不设上限</td><td>1.06</td><td>¥300</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>其他默认规则</h3>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>渠道</th><th>最低值</th><th>最高值</th><th>系数</th><th>封顶</th><th>说明</th></tr></thead>
+                <tbody>
+                  <tr><td>微信小程序</td><td>¥4,000</td><td>¥4,999</td><td>1.04</td><td>¥180</td><td><span class="tag override">子渠道专属优先</span></td></tr>
+                  <tr><td>门店柜机</td><td>¥0</td><td>¥5,999</td><td>1.03</td><td>¥150</td><td>门店平板继承</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="pending">
+            <p class="section-kicker">14 · Open Items</p>
+            <h2>待确认项</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>问题</th><th>影响</th><th>当前处理</th></tr></thead>
+                <tbody>
+                  <tr><td>正式渠道主数据来源及父子关系由哪个系统维护</td><td>影响渠道同步与继承配置</td><td>原型使用固定演示渠道树</td></tr>
+                  <tr><td>正式配置存储、接口和缓存失效机制</td><td>影响生效时延与失败降级</td><td>原型使用 <code>localStorage</code> 演示</td></tr>
+                  <tr><td>虚拟加价取整规则是否统一采用四舍五入</td><td>影响 0.5 元边界结果</td><td>当前原型采用四舍五入取整</td></tr>
+                  <tr><td>恢复默认是否允许普通运营操作</td><td>影响配置安全</td><td>文档要求二次确认并记录审计</td></tr>
+                  <tr><td>前台新估价的最终展示样式</td><td>由现有前台设计规范承接</td><td>本文仅定义金额口径与必要字段</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="doc-section" id="versions">
+            <p class="section-kicker">15 · Changelog</p>
+            <h2>版本记录</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>版本</th><th>日期</th><th>变更</th></tr></thead>
+                <tbody>
+                  <tr><td>v1.0</td><td>2026-11-11</td><td>初始成色价与价格段加价方案</td></tr>
+                  <tr><td>v1.1</td><td>2026-11-12</td><td>调整为按渠道配置虚拟加价；新增子渠道继承、系数与封顶；移除前台预览与前台报价页交付物；补充产品文档</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="doc-footer">文档状态：评审稿。页面中的演示数据仅用于原型验证，不代表正式渠道主数据、服务端存储或最终前台视觉规范。</p>
+          </section>
         </div>
-        <button class="quote-button" id="quoteButton" type="button">
-          询高价
-          <svg viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M4 10h11M11 6l4 4-4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
-          </svg>
-        </button>
-      </footer>
+      </main>
     </div>
-
-    <dialog class="grade-dialog" id="gradeDialog" aria-labelledby="grade-dialog-title">
-      <div class="dialog-handle" aria-hidden="true"></div>
-      <div class="dialog-head">
-        <div>
-          <p class="eyebrow">GRADE GUIDE</p>
-          <h2 id="grade-dialog-title">成色判定标准</h2>
-        </div>
-        <button class="dialog-close" id="closeGradeDialog" type="button" aria-label="关闭成色判定标准">
-          <svg viewBox="0 0 20 20" aria-hidden="true">
-            <path d="m5 5 10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.7" />
-          </svg>
-        </button>
-      </div>
-      <p class="dialog-intro">成色价根据外观与屏幕状态综合判定。选择成色可查看对应回收价，最终以质检结果为准。</p>
-      <div class="grade-standard-list">
-        <article data-grade="excellent">
-          <span class="grade-dot" aria-hidden="true"></span>
-          <div><h3>靓机</h3><p>边框、背板仅有细微使用痕迹，屏幕显示完好，无碎屏、漏液或显示异常。</p></div>
-        </article>
-        <article data-grade="minor">
-          <span class="grade-dot" aria-hidden="true"></span>
-          <div><h3>小花</h3><p>少量明显划痕或轻微磕碰，屏幕显示正常，无碎屏、漏液或显示异常。</p></div>
-        </article>
-        <article data-grade="major">
-          <span class="grade-dot" aria-hidden="true"></span>
-          <div><h3>大花</h3><p>多处划痕、掉漆或磕碰，结构完整，屏幕显示及触控正常。</p></div>
-        </article>
-        <article data-grade="outer">
-          <span class="grade-dot" aria-hidden="true"></span>
-          <div><h3>外爆</h3><p>外屏玻璃破裂或碎角，显示与触控状态需以质检复检结果为准。</p></div>
-        </article>
-        <article data-grade="inner">
-          <span class="grade-dot" aria-hidden="true"></span>
-          <div><h3>内爆</h3><p>内屏漏液、黑斑、色带或显示异常，需拆机复检确认最终价格。</p></div>
-        </article>
-      </div>
-      <p class="dialog-note">屏幕显示、电池健康度与功能异常会叠加影响最终价。成色价与功能扣减不重复计算。</p>
-      <button class="dialog-confirm" id="confirmGradeDialog" type="button">我知道了</button>
-    </dialog>
-
-    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script>
+      document.querySelectorAll(".table-wrap table").forEach((table) => {
+        const headers = [...table.querySelectorAll("thead th")].map((cell) => cell.textContent.trim());
+        table.querySelectorAll("tbody tr").forEach((row) => {
+          [...row.children].forEach((cell, index) => {
+            cell.dataset.label = headers[index] || "";
+          });
+        });
+      });
+    </script>
   </body>
 </html>

@@ -164,7 +164,7 @@ p {
   gap: 18px;
 }
 
-.preview-link {
+.doc-link {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -174,11 +174,11 @@ p {
   text-decoration: none;
 }
 
-.preview-link:hover {
+.doc-link:hover {
   text-decoration: underline;
 }
 
-.preview-link svg {
+.doc-link svg {
   width: 13px;
   height: 13px;
 }
@@ -582,7 +582,7 @@ p {
 .content-grid {
   display: grid;
   margin-top: 13px;
-  grid-template-columns: minmax(0, 1fr) 302px;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 13px;
 }
@@ -860,190 +860,6 @@ p {
   color: #7d8984;
   font-size: 10px;
   text-align: center;
-}
-
-.preview-panel {
-  position: sticky;
-  top: 16px;
-}
-
-.live-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 6px;
-  border-radius: 999px;
-  background: #eef9f6;
-  color: #096b5a;
-  font-size: 8px;
-  font-weight: 600;
-}
-
-.live-badge i {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 2px rgba(13, 157, 131, 0.1);
-}
-
-.preview-list {
-  padding: 4px 16px 2px;
-}
-
-.preview-channel-row {
-  display: grid;
-  gap: 5px;
-  padding: 11px 16px 4px;
-}
-
-.preview-channel-row > span {
-  color: #5f6c67;
-  font-size: 8px;
-  font-weight: 600;
-}
-
-.preview-channel-row select {
-  width: 100%;
-  height: 31px;
-  padding: 0 26px 0 9px;
-  border: 1px solid #d9e3df;
-  border-radius: 5px;
-  background: #fbfdfc;
-  color: #43504c;
-  font-size: 9.5px;
-  font-weight: 580;
-}
-
-.preview-row {
-  display: grid;
-  padding: 10px 0;
-  grid-template-columns: 46px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1px dashed #e6ece9;
-}
-
-.preview-row:last-child {
-  border-bottom: 0;
-}
-
-.preview-grade {
-  color: #4d5a55;
-  font-size: 10px;
-  font-weight: 650;
-}
-
-.preview-detail {
-  display: grid;
-  min-width: 0;
-  gap: 3px;
-}
-
-.preview-formula {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #7b8682;
-  font-size: 8px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.preview-formula b {
-  color: #5c6864;
-  font-size: 8.5px;
-  font-weight: 580;
-}
-
-.preview-formula em {
-  color: var(--green-dark);
-  font-size: 8px;
-  font-style: normal;
-  font-weight: 650;
-}
-
-.preview-source {
-  overflow: hidden;
-  color: #697671;
-  font-size: 7.5px;
-  line-height: 1.3;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.preview-final {
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 730;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.2px;
-}
-
-.preview-legend {
-  display: flex;
-  padding: 9px 16px;
-  align-items: center;
-  gap: 10px;
-  border-top: 1px solid #edf1ef;
-  border-bottom: 1px solid #edf1ef;
-  color: #5f6c67;
-  font-size: 7.5px;
-}
-
-.preview-legend span {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.legend-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-}
-
-.legend-dot.base {
-  background: #a5b0ac;
-}
-
-.legend-dot.add {
-  background: #43b79e;
-}
-
-.legend-dot.final {
-  background: #1e332d;
-}
-
-.preview-button {
-  display: flex;
-  height: 35px;
-  margin: 12px 16px 0;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  border-radius: 5px;
-  background: #eff9f6;
-  color: var(--green-dark);
-  font-size: 10px;
-  font-weight: 650;
-  text-decoration: none;
-}
-
-.preview-button:hover {
-  background: #e5f6f1;
-}
-
-.preview-button svg {
-  width: 15px;
-  height: 15px;
-}
-
-.preview-note {
-  margin: 8px 16px 13px;
-  color: #61706a;
-  font-size: 7.5px;
-  line-height: 1.5;
 }
 
 .rule-dialog,
@@ -1440,24 +1256,6 @@ p {
 }
 
 @media (max-width: 1120px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .preview-panel {
-    position: static;
-  }
-
-  .preview-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0 18px;
-  }
-
-  .preview-row:nth-last-child(2) {
-    border-bottom: 0;
-  }
-
   .formula-banner {
     align-items: flex-start;
     flex-direction: column;
@@ -1536,7 +1334,7 @@ p {
 }
 
 @media (max-width: 640px) {
-  .preview-link {
+  .doc-link {
     font-size: 9.5px;
   }
 
@@ -1582,8 +1380,7 @@ p {
     gap: 10px 8px;
   }
 
-  .rules-panel,
-  .preview-panel {
+  .rules-panel {
     min-width: 0;
   }
 
@@ -1648,14 +1445,6 @@ p {
     grid-column: 2;
     grid-row: 4;
     align-self: center;
-  }
-
-  .preview-list {
-    display: block;
-  }
-
-  .preview-row {
-    grid-template-columns: 45px minmax(0, 1fr) auto;
   }
 
   .field-grid {

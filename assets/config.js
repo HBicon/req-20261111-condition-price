@@ -1,17 +1,4 @@
-const demoGrades = [
-  { key: "excellent", name: "靓机", base: 4923 },
-  { key: "minor", name: "小花", base: 4650 },
-  { key: "major", name: "大花", base: 4180 },
-  { key: "outer", name: "外爆", base: 3260 },
-  { key: "inner", name: "内爆", base: 2450 },
-];
-
 const numberFormatter = new Intl.NumberFormat("zh-CN");
-const currencyFormatter = new Intl.NumberFormat("zh-CN", {
-  style: "currency",
-  currency: "CNY",
-  maximumFractionDigits: 0,
-});
 
 const rulesList = document.querySelector("#rulesList");
 const ruleDialog = document.querySelector("#ruleDialog");
@@ -30,8 +17,6 @@ const dialogCoeffHint = document.querySelector("#dialogCoeffHint");
 const dialogExtraHint = document.querySelector("#dialogExtraHint");
 const dialogCapHint = document.querySelector("#dialogCapHint");
 const dialogFinalHint = document.querySelector("#dialogFinalHint");
-const previewChannel = document.querySelector("#previewChannel");
-const previewLink = document.querySelector(".preview-button");
 const confirmDialog = document.querySelector("#confirmDialog");
 const confirmTitle = document.querySelector("#confirm-title");
 const confirmMessage = document.querySelector("#confirmMessage");
@@ -42,10 +27,6 @@ let state = PricingConfig.loadState();
 let editingRuleId = null;
 let pendingConfirmAction = null;
 let toastTimer;
-
-function formatMoney(value) {
-  return currencyFormatter.format(value).replace("CN¥", "¥");
-}
 
 function formatNumber(value) {
   return numberFormatter.format(value);
@@ -182,38 +163,8 @@ function renderRules() {
   renderOverview();
 }
 
-function renderPreview() {
-  const selectedId = previewChannel.value || "app-wechat";
-  const previewList = document.querySelector("#previewList");
-  previewLink.href = `./index.html?channel=${encodeURIComponent(selectedId)}`;
-
-  previewList.innerHTML = demoGrades
-    .map((grade) => {
-      const quote = PricingConfig.calculate(grade.base, selectedId, state.rules);
-      const extraText = quote.matched ? `+${formatMoney(quote.extra)}` : "未命中加价";
-      const sourceText = quote.matched
-        ? quote.inherited
-          ? `继承 ${quote.sourceChannel.name}`
-          : `${quote.sourceChannel.name} • 本渠道规则`
-        : "当前估价区间未配置";
-
-      return `
-        <div class="preview-row">
-          <span class="preview-grade">${grade.name}</span>
-          <span class="preview-detail">
-            <span class="preview-formula"><b>${formatMoney(grade.base)}</b><em>${extraText}</em></span>
-            <small class="preview-source">${sourceText}</small>
-          </span>
-          <strong class="preview-final">${formatMoney(quote.newHigh)}</strong>
-        </div>
-      `;
-    })
-    .join("");
-}
-
 function renderAll() {
   renderRules();
-  renderPreview();
 }
 
 function clearFormError() {
@@ -239,7 +190,7 @@ function updateChannelHint() {
     return;
   }
   if (descendants.length > 0) {
-    channelInheritanceHint.textContent = `应用到“${channel.name}”，其下 ${descendants.length} 个子渠道自动继承；子渠道同区间专属规则优先生效。`;
+    channelInheritanceHint.textContent = `应用到“${channel.name}”，其下 ${descendants.length} 个子渠道自动继承；子渠道匹配规则优先生效。`;
   } else {
     channelInheritanceHint.textContent = "子渠道专属规则优先；当前估价金额未命中本渠道规则时，继续向上继承父渠道规则。";
   }
@@ -273,8 +224,8 @@ function updateDialogFormula() {
   dialogBaseHint.textContent = formatNumber(base);
   dialogCoeffHint.textContent = markupRate.toFixed(2);
   dialogExtraHint.textContent = formatNumber(rawExtra);
-  dialogCapHint.textContent = formatMoney(safeCap);
-  dialogFinalHint.textContent = formatMoney(base + extra);
+  dialogCapHint.textContent = `¥${formatNumber(safeCap)}`;
+  dialogFinalHint.textContent = `¥${formatNumber(base + extra)}`;
 }
 
 function openRuleDialog(rule = null) {
@@ -392,7 +343,7 @@ ruleForm.addEventListener("submit", (event) => {
   state = PricingConfig.saveState(nextRules);
   closeRuleDialog();
   renderAll();
-  showToast(editingRuleId ? "虚拟加价规则已更新，前台新估价已同步。" : "虚拟加价规则已新增，前台新估价已同步。");
+  showToast(editingRuleId ? "虚拟加价规则已更新并生效。" : "虚拟加价规则已新增并生效。");
   editingRuleId = null;
 });
 
@@ -415,7 +366,7 @@ rulesList.addEventListener("click", (event) => {
       action: () => {
         state = PricingConfig.saveState(state.rules.filter((item) => item.id !== rule.id));
         renderAll();
-        showToast("虚拟加价规则已删除，前台新估价已同步。");
+        showToast("虚拟加价规则已删除，新估价将按剩余规则计算。");
       },
     });
     return;
@@ -432,7 +383,7 @@ rulesList.addEventListener("click", (event) => {
     }
     state = PricingConfig.saveState(state.rules.map((item) => (item.id === rule.id ? nextRule : item)));
     renderAll();
-    showToast(nextRule.enabled ? "规则已启用，前台已同步。" : "规则已停用，前台已同步。");
+    showToast(nextRule.enabled ? "规则已启用并生效。" : "规则已停用，新估价将不再命中该规则。");
   }
 });
 
@@ -445,7 +396,6 @@ ruleDialog.addEventListener("click", (event) => {
 
 [ruleMin, ruleMax, ruleCoefficient, ruleCap].forEach((input) => input.addEventListener("input", updateDialogFormula));
 ruleChannel.addEventListener("change", updateChannelHint);
-previewChannel.addEventListener("change", renderPreview);
 
 document.querySelector("#resetRules").addEventListener("click", () => {
   askConfirm({
@@ -455,7 +405,7 @@ document.querySelector("#resetRules").addEventListener("click", () => {
     action: () => {
       state = PricingConfig.resetState();
       renderAll();
-      showToast("已恢复默认虚拟加价规则，前台新估价已同步。");
+      showToast("已恢复默认虚拟加价规则。");
     },
   });
 });
@@ -481,6 +431,5 @@ window.addEventListener("pageshow", () => {
   renderAll();
 });
 
-populateChannelSelect(previewChannel, "app-wechat");
 populateChannelSelect(ruleChannel, "app");
 renderAll();
