@@ -13,9 +13,9 @@
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d7e6b'/%3E%3Cpath d='M15 19h34v8H15zm0 16h15v9H15zm20 0h14v9H35z' fill='white'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="./assets/config.css?v=20261112-3" />
-    <script src="./assets/pricing.js?v=20261112-3" defer></script>
-    <script src="./assets/config.js?v=20261112-3" defer></script>
+    <link rel="stylesheet" href="./assets/config.css?v=20261112-4" />
+    <script src="./assets/pricing.js?v=20261112-4" defer></script>
+    <script src="./assets/config.js?v=20261112-4" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -69,7 +69,7 @@
               <h1 id="page-title">虚拟加价配置</h1>
               <span class="status-badge"><i aria-hidden="true"></i>配置规则生效</span>
             </div>
-            <p>按应用渠道配置估价金额区间、虚拟加价系数与封顶金额。子渠道自动继承父渠道规则，已有前台估价时展示新估价。</p>
+            <p>按应用渠道配置估价金额区间、虚拟加价系数与封顶金额。区间价按最低值命中规则，子渠道自动继承父渠道规则。</p>
           </div>
           <div class="heading-actions">
             <button class="button secondary" id="resetRules" type="button">恢复默认</button>
@@ -79,7 +79,9 @@
 
         <section class="formula-banner" aria-label="虚拟加价计算规则">
           <div class="formula-flow">
-            <span class="formula-node">原估价最高值 ×(系数−1)</span>
+            <span class="formula-node">原估价最高值 ×(1＋系数)</span>
+            <i aria-hidden="true">−</i>
+            <span class="formula-node">原估价最高值</span>
             <i aria-hidden="true">→</i>
             <span class="formula-node">封顶后加价</span>
             <i aria-hidden="true">+</i>
@@ -87,7 +89,7 @@
             <i aria-hidden="true">＝</i>
             <strong class="formula-node result">新估价</strong>
           </div>
-          <p>虚拟加价＝min［原估价最高值×(系数−1)，封顶金额］。区间价按最高值命中规则，区间首尾同步加价，最高值同步展示新金额。</p>
+          <p>虚拟加价＝min［原估价最高值×(1＋系数)−原估价最高值，封顶金额］。系数按小数填写，如 0.05 表示加价 5%。</p>
         </section>
 
         <section class="metrics" aria-label="配置概览">
@@ -158,7 +160,8 @@
           <div class="field-grid">
             <label class="field">
               <span>虚拟加价系数 <b>*</b></span>
-              <span class="input-wrap"><i>×</i><input id="ruleCoefficient" name="coefficient" type="number" inputmode="decimal" min="1.01" max="9.99" step="0.01" placeholder="如 1.05" required /></span>
+              <span class="input-wrap"><i>×</i><input id="ruleCoefficient" name="coefficient" type="number" inputmode="decimal" min="0.01" max="9.99" step="0.01" placeholder="如 0.05" required /></span>
+              <small class="field-note">小数比例，如 0.05 表示加价 5%；最多两位小数。</small>
             </label>
             <label class="field">
               <span>封顶金额 <b>*</b></span>
@@ -173,9 +176,9 @@
           <div class="formula-preview" id="dialogFormula" aria-live="polite">
             <span>最高值 <b id="dialogBaseHint">4,999</b></span>
             <i>×</i>
-            <span>(系数−1) <b id="dialogCoeffHint">0.05</b></span>
+            <span>系数 <b id="dialogCoeffHint">0.05</b></span>
             <i>→</i>
-            <span>加价 <b id="dialogExtraHint">246</b></span>
+            <span>加价 <b id="dialogExtraHint">250</b></span>
             <span class="cap-hint">封顶 <b id="dialogCapHint">200</b></span>
             <strong id="dialogFinalHint">¥5,199</strong>
           </div>

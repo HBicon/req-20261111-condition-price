@@ -65,7 +65,7 @@
             在后台按应用渠道配置估价金额区间、虚拟加价系数和封顶金额，并支持子渠道逐级继承。已有前台估价系统读取配置后额外展示新估价，不重做前台报价页面。
           </p>
           <div class="hero-meta" aria-label="文档元信息">
-            <span class="meta-chip">版本 <strong>v1.1</strong></span>
+            <span class="meta-chip">版本 <strong>v1.2</strong></span>
             <span class="meta-chip status">状态 <strong>评审稿</strong></span>
             <span class="meta-chip">更新时间 <strong>2026-11-12</strong></span>
             <span class="meta-chip">交付物 <strong>后台原型 + 产品文档</strong></span>
@@ -85,7 +85,7 @@
               <li>运营人员可在后台按应用渠道配置估价金额区间、虚拟加价系数和封顶金额。</li>
               <li>子渠道未配置规则或未命中规则时，可逐级继承父渠道规则。</li>
               <li>已有前台估价系统可在原估价基础上额外展示新估价，不改变原有报价主流程。</li>
-              <li>单值价和区间价采用同一套计算口径；区间价按最高值命中规则，并将加价金额同步应用到区间首尾。</li>
+              <li>单值价和区间价采用同一套计算口径；区间价按最低值命中规则，按最高值计算加价，并将同一金额同步应用到区间首尾。</li>
             </ul>
             <div class="doc-callout">
               <span class="callout-mark" aria-hidden="true">i</span>
@@ -187,7 +187,7 @@
                   <tr><td><strong>应用渠道</strong></td><td>下拉选择</td><td>是</td><td>必须选择有效渠道</td><td>支持父渠道和子渠道，展示完整层级</td></tr>
                   <tr><td><strong>估价金额最低值</strong></td><td>整数</td><td>是</td><td><code>≥ 0</code></td><td>原估价命中区间的下限</td></tr>
                   <tr><td><strong>估价金额最高值</strong></td><td>整数</td><td>否</td><td>大于最低值；留空表示不设上限</td><td>原估价命中区间的上限</td></tr>
-                  <tr><td><strong>虚拟加价系数</strong></td><td>小数</td><td>是</td><td><code>&gt; 1</code> 且 <code>≤ 9.99</code>，最多两位小数</td><td><code>1.05</code> 表示按原估价最高值的 5% 计算加价</td></tr>
+                  <tr><td><strong>虚拟加价系数</strong></td><td>小数</td><td>是</td><td><code>&gt; 0</code> 且 <code>≤ 9.99</code>，必须为小数且最多两位小数</td><td><code>0.05</code> 表示按原估价最高值的 5% 计算加价</td></tr>
                   <tr><td><strong>封顶金额</strong></td><td>整数</td><td>是</td><td><code>≥ 0</code></td><td>计算结果超过封顶时，仅按封顶金额加价</td></tr>
                   <tr><td><strong>保存后立即启用</strong></td><td>开关</td><td>否</td><td>默认开启</td><td>关闭时保存为停用规则，不参与估价</td></tr>
                 </tbody>
@@ -211,18 +211,18 @@
                   <tr><th>应用渠道</th><th>父渠道</th><th>默认规则</th><th>继承行为</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td><strong>有得卖 App</strong></td><td>无</td><td>0–2,999：1.02 / ¥60；3,000–3,999：1.03 / ¥100；4,000–4,999：1.05 / ¥200；5,000 以上：1.06 / ¥300</td><td>其下子渠道可继承</td></tr>
-                  <tr><td><strong>微信小程序</strong></td><td>有得卖 App</td><td>4,000–4,999：1.04 / ¥180</td><td><span class="tag override">子渠道专属优先</span> 其他区间继承 App</td></tr>
+                  <tr><td><strong>有得卖 App</strong></td><td>无</td><td>0–2,999：0.02 / ¥60；3,000–3,999：0.03 / ¥100；4,000–4,999：0.05 / ¥200；5,000 以上：0.06 / ¥300</td><td>其下子渠道可继承</td></tr>
+                  <tr><td><strong>微信小程序</strong></td><td>有得卖 App</td><td>4,000–4,999：0.04 / ¥180</td><td><span class="tag override">子渠道专属优先</span> 其他区间继承 App</td></tr>
                   <tr><td><strong>支付宝小程序</strong></td><td>有得卖 App</td><td>无</td><td>默认继承 App</td></tr>
                   <tr><td><strong>抖音小程序</strong></td><td>有得卖 App</td><td>无</td><td>默认继承 App</td></tr>
-                  <tr><td><strong>门店柜机</strong></td><td>无</td><td>0–5,999：1.03 / ¥150</td><td>其下子渠道可继承</td></tr>
+                  <tr><td><strong>门店柜机</strong></td><td>无</td><td>0–5,999：0.03 / ¥150</td><td>其下子渠道可继承</td></tr>
                   <tr><td><strong>门店平板</strong></td><td>门店柜机</td><td>无</td><td>默认继承门店柜机</td></tr>
                 </tbody>
               </table>
             </div>
             <h3>继承优先级</h3>
             <div class="rule-order">
-              <div class="rule-step"><span class="step-number">1</span><div><strong>当前渠道优先</strong><p>先使用当前应用渠道自身的启用规则匹配原估价最高值。</p></div></div>
+              <div class="rule-step"><span class="step-number">1</span><div><strong>当前渠道优先</strong><p>先使用当前应用渠道自身的启用规则匹配原估价最低值。</p></div></div>
               <div class="rule-step"><span class="step-number">2</span><div><strong>逐级向上继承</strong><p>当前渠道未命中时，按父渠道逐级向上匹配。</p></div></div>
               <div class="rule-step"><span class="step-number">3</span><div><strong>命中即停止</strong><p>任一上级渠道命中后，使用该规则的系数和封顶金额。</p></div></div>
               <div class="rule-step"><span class="step-number">4</span><div><strong>无规则不加价</strong><p>所有层级均未命中时，不计算虚拟加价，仅展示原估价。</p></div></div>
@@ -235,16 +235,16 @@
             <h2>计算规则</h2>
             <div class="formula-box">
               <div class="formula-line">
-                <span>原估价最高值 × (系数−1)</span><i>→</i><span>四舍五入</span><i>→</i><span>封顶控制</span><i>+</i><span>原估价</span><i>=</i><span class="result">新估价</span>
+                <span>原估价最高值 × (1＋系数)</span><i>−</i><span>原估价最高值</span><i>→</i><span>四舍五入 / 封顶</span><i>+</i><span>原估价</span><i>=</i><span class="result">新估价</span>
               </div>
               <p class="formula-note">
-                虚拟加价 = min(round(原估价最高值 × (虚拟加价系数 − 1)), 封顶金额)。区间价使用最高值命中规则，并将同一加价金额同步加到区间首尾。
+                虚拟加价 = min(round(原估价最高值 × 虚拟加价系数), 封顶金额)。系数为小数比例，如 0.05 表示 5%；区间价以最低值命中规则，以最高值计算加价，并将同一金额同步加到区间首尾。
               </p>
             </div>
             <h3>单值与区间价</h3>
             <ul>
-              <li>单值估价：原估价最低值等于最高值，新估价为原估价加虚拟加价。</li>
-              <li>区间价：以原估价最高值匹配渠道规则，同一虚拟加价金额同步加到区间最低值和最高值。</li>
+              <li>单值估价：原估价最低值等于最高值，按该值命中规则并计算虚拟加价，新估价为原估价加该金额。</li>
+              <li>区间价：以原估价最低值匹配渠道规则，以原估价最高值计算虚拟加价，同一金额同步加到区间最低值和最高值。</li>
               <li>区间价主金额展示新估价最高值；如有区间形态，同时展示完整的新估价区间。</li>
               <li>未命中任何启用规则：不展示虚拟加价和新估价加价标识，直接使用原估价。</li>
             </ul>
@@ -255,12 +255,13 @@
                   <tr><th>场景</th><th>原估价</th><th>命中规则</th><th>原始加价</th><th>封顶后加价</th><th>新估价</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>有得卖 App · 靓机</td><td>¥4,923</td><td>4,000–4,999；1.05；封顶 ¥200</td><td>246</td><td>200</td><td><strong>¥5,123</strong></td></tr>
-                  <tr><td>微信小程序 · 小花</td><td>¥4,650</td><td>4,000–4,999；1.04；封顶 ¥180</td><td>186</td><td>180</td><td><strong>¥4,830</strong></td></tr>
-                  <tr><td>微信小程序 · 大花</td><td>¥4,180</td><td>4,000–4,999；1.04；封顶 ¥180</td><td>167</td><td>167</td><td><strong>¥4,347</strong></td></tr>
-                  <tr><td>微信小程序 · 外爆继承 App</td><td>¥3,260</td><td>3,000–3,999；1.03；封顶 ¥100</td><td>98</td><td>98</td><td><strong>¥3,358</strong></td></tr>
-                  <tr><td>门店平板继承门店柜机</td><td>¥4,500</td><td>0–5,999；1.03；封顶 ¥150</td><td>135</td><td>135</td><td><strong>¥4,635</strong></td></tr>
-                  <tr><td>区间价 · App</td><td>¥4,800–¥4,923</td><td>4,000–4,999；1.05；封顶 ¥200</td><td>246</td><td>200</td><td><strong>¥5,000–¥5,123</strong></td></tr>
+                  <tr><td>有得卖 App · 靓机</td><td>¥4,923</td><td>4,000–4,999；0.05；封顶 ¥200</td><td>246</td><td>200</td><td><strong>¥5,123</strong></td></tr>
+                  <tr><td>微信小程序 · 小花</td><td>¥4,650</td><td>4,000–4,999；0.04；封顶 ¥180</td><td>186</td><td>180</td><td><strong>¥4,830</strong></td></tr>
+                  <tr><td>微信小程序 · 大花</td><td>¥4,180</td><td>4,000–4,999；0.04；封顶 ¥180</td><td>167</td><td>167</td><td><strong>¥4,347</strong></td></tr>
+                  <tr><td>微信小程序 · 外爆继承 App</td><td>¥3,260</td><td>3,000–3,999；0.03；封顶 ¥100</td><td>98</td><td>98</td><td><strong>¥3,358</strong></td></tr>
+                  <tr><td>门店平板继承门店柜机</td><td>¥4,500</td><td>0–5,999；0.03；封顶 ¥150</td><td>135</td><td>135</td><td><strong>¥4,635</strong></td></tr>
+                  <tr><td>区间价 · App</td><td>¥4,800–¥4,923</td><td>按最低值 4,800 命中 4,000–4,999；0.05；封顶 ¥200</td><td>246</td><td>200</td><td><strong>¥5,000–¥5,123</strong></td></tr>
+                  <tr><td>跨区间价 · App</td><td>¥3,999–¥4,200</td><td>按最低值 3,999 命中 3,000–3,999；0.03；封顶 ¥100</td><td>126</td><td>100</td><td><strong>¥4,099–¥4,300</strong></td></tr>
                 </tbody>
               </table>
             </div>
@@ -308,7 +309,7 @@
                 </thead>
                 <tbody>
                   <tr><td>区间上下限非法</td><td>阻止保存，提示最高值必须大于最低值</td></tr>
-                  <tr><td>系数不在允许范围</td><td>阻止保存，提示系数需大于 1 且不超过 9.99</td></tr>
+                  <tr><td>系数格式不合法</td><td>阻止保存，提示系数需为大于 0 且不超过 9.99 的小数，最多两位小数</td></tr>
                   <tr><td>封顶金额缺失或为负数</td><td>阻止保存，提示封顶金额需为不小于 0 的整数</td></tr>
                   <tr><td>同渠道区间重叠</td><td>阻止保存或启用，并提示冲突区间</td></tr>
                   <tr><td>不同渠道区间重叠</td><td>允许，渠道之间相互独立</td></tr>
@@ -376,14 +377,16 @@
               <table>
                 <thead><tr><th>场景</th><th>操作</th><th>预期结果</th></tr></thead>
                 <tbody>
-                  <tr><td>规则新增</td><td>App 新增 4,000–4,999、系数 1.05、封顶 ¥200</td><td>保存成功，列表立即展示新规则</td></tr>
+                  <tr><td>规则新增</td><td>App 新增 4,000–4,999、系数 0.05、封顶 ¥200</td><td>保存成功，列表立即展示新规则</td></tr>
                   <tr><td>同渠道冲突</td><td>App 新增 4,100–4,200</td><td>保存被阻止，提示与 4,000–4,999 规则重叠</td></tr>
                   <tr><td>跨渠道同区间</td><td>支付宝小程序新增 4,000–4,999</td><td>允许保存，不与 App 规则冲突</td></tr>
-                  <tr><td>封顶计算</td><td>App 原估价 ¥4,923 命中 1.05 / ¥200</td><td>加价 ¥200，新估价 ¥5,123</td></tr>
-                  <tr><td>子渠道优先</td><td>微信小程序原估价 ¥4,650 命中 1.04 / ¥180</td><td>使用微信规则，新估价 ¥4,830</td></tr>
-                  <tr><td>父渠道继承</td><td>微信小程序原估价 ¥3,260</td><td>继承 App 1.03 / ¥100，新估价 ¥3,358</td></tr>
-                  <tr><td>停用回退</td><td>停用微信小程序 4,000–4,999 规则，查询 ¥4,650</td><td>回退 App 1.05 / ¥200，新估价 ¥4,850</td></tr>
-                  <tr><td>区间价</td><td>原估价 ¥4,800–¥4,923，App 规则封顶 ¥200</td><td>新估价 ¥5,000–¥5,123</td></tr>
+                  <tr><td>封顶计算</td><td>App 原估价 ¥4,923 命中 0.05 / ¥200</td><td>加价 ¥200，新估价 ¥5,123</td></tr>
+                  <tr><td>子渠道优先</td><td>微信小程序原估价 ¥4,650 命中 0.04 / ¥180</td><td>使用微信规则，新估价 ¥4,830</td></tr>
+                  <tr><td>父渠道继承</td><td>微信小程序原估价 ¥3,260</td><td>继承 App 0.03 / ¥100，新估价 ¥3,358</td></tr>
+                  <tr><td>停用回退</td><td>停用微信小程序 4,000–4,999 规则，查询 ¥4,650</td><td>回退 App 0.05 / ¥200，新估价 ¥4,850</td></tr>
+                  <tr><td>区间价同区间</td><td>原估价 ¥4,800–¥4,923，App 规则封顶 ¥200</td><td>按最低值命中，新估价 ¥5,000–¥5,123</td></tr>
+                  <tr><td>区间价跨价格段</td><td>原估价 ¥3,999–¥4,200，App 默认规则</td><td>按最低值 3,999 命中，加价 ¥100，新估价 ¥4,099–¥4,300</td></tr>
+                  <tr><td>系数两位小数</td><td>输入 0.025 或 1.234</td><td>阻止保存，提示最多两位小数</td></tr>
                   <tr><td>未命中规则</td><td>查询无任何可匹配规则的金额</td><td>仅展示原估价，不显示虚拟加价</td></tr>
                   <tr><td>删除规则</td><td>删除门店柜机规则后查询门店平板</td><td>门店平板不再继承该规则，按无规则处理</td></tr>
                 </tbody>
@@ -399,10 +402,10 @@
               <table>
                 <thead><tr><th>最低值</th><th>最高值</th><th>系数</th><th>封顶</th></tr></thead>
                 <tbody>
-                  <tr><td>¥0</td><td>¥2,999</td><td>1.02</td><td>¥60</td></tr>
-                  <tr><td>¥3,000</td><td>¥3,999</td><td>1.03</td><td>¥100</td></tr>
-                  <tr><td>¥4,000</td><td>¥4,999</td><td>1.05</td><td>¥200</td></tr>
-                  <tr><td>¥5,000</td><td>不设上限</td><td>1.06</td><td>¥300</td></tr>
+                  <tr><td>¥0</td><td>¥2,999</td><td>0.02</td><td>¥60</td></tr>
+                  <tr><td>¥3,000</td><td>¥3,999</td><td>0.03</td><td>¥100</td></tr>
+                  <tr><td>¥4,000</td><td>¥4,999</td><td>0.05</td><td>¥200</td></tr>
+                  <tr><td>¥5,000</td><td>不设上限</td><td>0.06</td><td>¥300</td></tr>
                 </tbody>
               </table>
             </div>
@@ -411,8 +414,8 @@
               <table>
                 <thead><tr><th>渠道</th><th>最低值</th><th>最高值</th><th>系数</th><th>封顶</th><th>说明</th></tr></thead>
                 <tbody>
-                  <tr><td>微信小程序</td><td>¥4,000</td><td>¥4,999</td><td>1.04</td><td>¥180</td><td><span class="tag override">子渠道专属优先</span></td></tr>
-                  <tr><td>门店柜机</td><td>¥0</td><td>¥5,999</td><td>1.03</td><td>¥150</td><td>门店平板继承</td></tr>
+                  <tr><td>微信小程序</td><td>¥4,000</td><td>¥4,999</td><td>0.04</td><td>¥180</td><td><span class="tag override">子渠道专属优先</span></td></tr>
+                  <tr><td>门店柜机</td><td>¥0</td><td>¥5,999</td><td>0.03</td><td>¥150</td><td>门店平板继承</td></tr>
                 </tbody>
               </table>
             </div>
@@ -444,6 +447,7 @@
                 <tbody>
                   <tr><td>v1.0</td><td>2026-11-11</td><td>初始成色价与价格段加价方案</td></tr>
                   <tr><td>v1.1</td><td>2026-11-12</td><td>调整为按渠道配置虚拟加价；新增子渠道继承、系数与封顶；移除前台预览与前台报价页交付物；补充产品文档</td></tr>
+                  <tr><td>v1.2</td><td>2026-11-12</td><td>区间价改为按最低值命中规则；系数改为小数比例；补充跨价格段区间价与两位小数校验</td></tr>
                 </tbody>
               </table>
             </div>

@@ -203,6 +203,14 @@ function parseIntegerField(input) {
   return value;
 }
 
+function parseCoefficientField(input) {
+  const raw = input.value.trim();
+  if (!/^\d+\.\d{1,2}$/.test(raw)) return Number.NaN;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value <= 0 || value > 9.99) return Number.NaN;
+  return value;
+}
+
 function getDialogSampleHigh() {
   const max = parseIntegerField(ruleMax);
   const min = parseIntegerField(ruleMin);
@@ -213,16 +221,15 @@ function getDialogSampleHigh() {
 
 function updateDialogFormula() {
   const base = Math.max(0, getDialogSampleHigh() || 0);
-  const coefficient = Number(ruleCoefficient.value);
+  const coefficient = parseCoefficientField(ruleCoefficient);
   const cap = Number(ruleCap.value);
-  const safeCoefficient = Number.isFinite(coefficient) && coefficient > 1 ? coefficient : 1;
+  const safeCoefficient = Number.isFinite(coefficient) ? coefficient : 0;
   const safeCap = Number.isFinite(cap) && cap >= 0 ? Math.round(cap) : 0;
-  const markupRate = Math.max(0, safeCoefficient - 1);
-  const rawExtra = Math.round(base * (safeCoefficient - 1));
+  const rawExtra = Math.round(base * safeCoefficient);
   const extra = Math.min(rawExtra, safeCap);
 
   dialogBaseHint.textContent = formatNumber(base);
-  dialogCoeffHint.textContent = markupRate.toFixed(2);
+  dialogCoeffHint.textContent = safeCoefficient.toFixed(2);
   dialogExtraHint.textContent = formatNumber(rawExtra);
   dialogCapHint.textContent = `¥${formatNumber(safeCap)}`;
   dialogFinalHint.textContent = `¥${formatNumber(base + extra)}`;
@@ -234,7 +241,7 @@ function openRuleDialog(rule = null) {
   populateChannelSelect(ruleChannel, rule ? rule.channelId : "app");
   ruleMin.value = rule ? String(rule.min) : "";
   ruleMax.value = rule && rule.max !== null ? String(rule.max) : "";
-  ruleCoefficient.value = rule ? PricingConfig.formatCoefficient(rule.coefficient) : "1.05";
+  ruleCoefficient.value = rule ? PricingConfig.formatCoefficient(rule.coefficient) : "0.05";
   ruleCap.value = rule ? String(rule.cap) : "";
   ruleEnabled.checked = rule ? rule.enabled : true;
   clearFormError();
@@ -285,7 +292,7 @@ ruleForm.addEventListener("submit", (event) => {
   const channelId = ruleChannel.value;
   const min = parseIntegerField(ruleMin);
   const max = parseIntegerField(ruleMax);
-  const coefficient = Number(ruleCoefficient.value);
+  const coefficient = parseCoefficientField(ruleCoefficient);
   const cap = parseIntegerField(ruleCap);
   const enabled = ruleEnabled.checked;
   const channel = PricingConfig.getChannel(channelId);
@@ -305,8 +312,8 @@ ruleForm.addEventListener("submit", (event) => {
     ruleMax.focus();
     return;
   }
-  if (!Number.isFinite(coefficient) || coefficient <= 1 || coefficient > 9.99) {
-    setFormError("虚拟加价系数需大于 1 且不超过 9.99，例如 1.05。");
+  if (!Number.isFinite(coefficient)) {
+    setFormError("虚拟加价系数需填写大于 0 且不超过 9.99 的小数，最多两位小数，例如 0.05。");
     ruleCoefficient.focus();
     return;
   }

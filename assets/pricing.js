@@ -1,5 +1,5 @@
 (function attachPricingConfig(global) {
-  const STORAGE_KEY = "virtual-markup-rules-v2";
+  const STORAGE_KEY = "virtual-markup-rules-v3";
 
   const CHANNELS = [
     { id: "app", name: "有得卖 App", parentId: null },
@@ -11,12 +11,12 @@
   ];
 
   const DEFAULT_RULES = [
-    { id: "rule-app-1", channelId: "app", min: 0, max: 2999, coefficient: 1.02, cap: 60, enabled: true },
-    { id: "rule-app-2", channelId: "app", min: 3000, max: 3999, coefficient: 1.03, cap: 100, enabled: true },
-    { id: "rule-app-3", channelId: "app", min: 4000, max: 4999, coefficient: 1.05, cap: 200, enabled: true },
-    { id: "rule-app-4", channelId: "app", min: 5000, max: null, coefficient: 1.06, cap: 300, enabled: true },
-    { id: "rule-wechat-1", channelId: "app-wechat", min: 4000, max: 4999, coefficient: 1.04, cap: 180, enabled: true },
-    { id: "rule-store-1", channelId: "store", min: 0, max: 5999, coefficient: 1.03, cap: 150, enabled: true },
+    { id: "rule-app-1", channelId: "app", min: 0, max: 2999, coefficient: 0.02, cap: 60, enabled: true },
+    { id: "rule-app-2", channelId: "app", min: 3000, max: 3999, coefficient: 0.03, cap: 100, enabled: true },
+    { id: "rule-app-3", channelId: "app", min: 4000, max: 4999, coefficient: 0.05, cap: 200, enabled: true },
+    { id: "rule-app-4", channelId: "app", min: 5000, max: null, coefficient: 0.06, cap: 300, enabled: true },
+    { id: "rule-wechat-1", channelId: "app-wechat", min: 4000, max: 4999, coefficient: 0.04, cap: 180, enabled: true },
+    { id: "rule-store-1", channelId: "store", min: 0, max: 5999, coefficient: 0.03, cap: 150, enabled: true },
   ];
 
   const numberFormatter = new Intl.NumberFormat("zh-CN");
@@ -82,7 +82,7 @@
       channelId,
       min: Number.isFinite(min) ? Math.max(0, Math.round(min)) : 0,
       max: Number.isFinite(max) && max !== null ? Math.max(0, Math.round(max)) : null,
-      coefficient: Number.isFinite(coefficient) ? Math.max(1, Math.round(coefficient * 100) / 100) : 1,
+      coefficient: Number.isFinite(coefficient) ? Math.min(9.99, Math.max(0.01, Math.round(coefficient * 100) / 100)) : 0.01,
       cap: Number.isFinite(cap) ? Math.max(0, Math.round(cap)) : 0,
       enabled: rule.enabled !== false,
     };
@@ -161,9 +161,9 @@
   function calculate(base, channelId, rules = loadState().rules) {
     const high = typeof base === "number" ? base : Number(base.high);
     const low = typeof base === "number" ? high : Number(base.low);
-    const resolution = resolveRule(channelId, high, rules);
+    const resolution = resolveRule(channelId, low, rules);
     const rule = resolution.rule;
-    const rawExtra = rule ? Math.max(0, Math.round(high * (rule.coefficient - 1))) : 0;
+    const rawExtra = rule ? Math.max(0, Math.round(high * rule.coefficient)) : 0;
     const extra = rule ? Math.min(rawExtra, rule.cap) : 0;
 
     return {
