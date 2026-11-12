@@ -6,16 +6,16 @@
     <meta name="theme-color" content="#0d7e6b" />
     <meta
       name="description"
-      content="价格段加价配置后台原型：按不同成色基础价格段配置额外叠加金额，并实时预览前台最新估价。"
+      content="虚拟加价配置后台原型：按应用渠道配置估价金额区间、虚拟加价系数与封顶金额，支持子渠道继承并实时预览新估价。"
     />
-    <title>价格段加价配置｜回收运营后台</title>
+    <title>虚拟加价配置｜回收运营后台</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d7e6b'/%3E%3Cpath d='M15 19h34v8H15zm0 16h15v9H15zm20 0h14v9H35z' fill='white'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="./assets/config.css?v=20261111-8" />
-    <script src="./assets/pricing.js?v=20261111-2" defer></script>
-    <script src="./assets/config.js?v=20261111-2" defer></script>
+    <link rel="stylesheet" href="./assets/config.css?v=20261112-2" />
+    <script src="./assets/pricing.js?v=20261112-2" defer></script>
+    <script src="./assets/config.js?v=20261112-2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -48,51 +48,53 @@
           <a class="nav-item" href="./index.html"><span class="nav-icon" aria-hidden="true">◫</span><span>成色价展示</span></a>
           <a class="nav-item is-active" href="./config.html" aria-current="page">
             <span class="nav-icon" aria-hidden="true">＋</span>
-            <span>价格段加价</span>
+            <span>虚拟加价配置</span>
             <span class="nav-new">NEW</span>
           </a>
         </nav>
         <div class="sidebar-note">
           <span class="note-mark" aria-hidden="true">i</span>
-          <strong>最新估价计算</strong>
-          <p>成色基础价命中价格段后叠加配置金额，仅对启用中的规则生效。</p>
+          <strong>子渠道继承</strong>
+          <p>父渠道规则自动应用到子渠道；子渠道配置同区间规则时，优先使用子渠道规则。</p>
         </div>
       </aside>
 
       <main class="main" id="main-content">
         <nav class="breadcrumb" aria-label="面包屑">
-          <span>报价配置</span><i aria-hidden="true">/</i><strong aria-current="page">价格段加价</strong>
+          <span>报价配置</span><i aria-hidden="true">/</i><strong aria-current="page">虚拟加价</strong>
         </nav>
 
         <section class="page-heading" aria-labelledby="page-title">
           <div>
             <div class="title-line">
-              <h1 id="page-title">价格段加价配置</h1>
+              <h1 id="page-title">虚拟加价配置</h1>
               <span class="status-badge"><i aria-hidden="true"></i>前台已生效</span>
             </div>
-            <p>按成色基础价配置不同价格段的额外叠加金额，前台以“最新估价”展示最终金额。</p>
+            <p>按应用渠道配置估价金额区间、虚拟加价系数与封顶金额。子渠道自动继承父渠道规则，配置后前台额外展示新估价。</p>
           </div>
           <div class="heading-actions">
             <button class="button secondary" id="resetRules" type="button">恢复默认</button>
-            <button class="button primary" id="addRule" type="button"><span aria-hidden="true">＋</span>新增价格段</button>
+            <button class="button primary" id="addRule" type="button"><span aria-hidden="true">＋</span>新增规则</button>
           </div>
         </section>
 
-        <section class="formula-banner" aria-label="最新估价计算规则">
+        <section class="formula-banner" aria-label="虚拟加价计算规则">
           <div class="formula-flow">
-            <span class="formula-node">成色基础价</span>
-            <i aria-hidden="true">＋</i>
-            <span class="formula-node accent">命中价格段加价</span>
+            <span class="formula-node">原估价最高值 ×(系数−1)</span>
+            <i aria-hidden="true">→</i>
+            <span class="formula-node">封顶后加价</span>
+            <i aria-hidden="true">+</i>
+            <span class="formula-node accent">原估价</span>
             <i aria-hidden="true">＝</i>
-            <strong class="formula-node result">前台最新估价</strong>
+            <strong class="formula-node result">前台新估价</strong>
           </div>
-          <p>价格段包含上下边界；同一基础价只命中一条启用规则；未命中时按基础价展示，不额外加价。</p>
+          <p>虚拟加价＝min［原估价最高值×(系数−1)，封顶金额］。区间价按最高值命中规则，区间首尾同步加价，最高值同步展示新金额。</p>
         </section>
 
         <section class="metrics" aria-label="配置概览">
-          <article><span>启用规则</span><strong id="metricEnabled">6</strong><small>条价格段</small></article>
-          <article><span>覆盖成色</span><strong id="metricCoverage">5 / 5</strong><small>当前示例机型</small></article>
-          <article><span>今日命中</span><strong id="metricMatched">5</strong><small>档成色有加价</small></article>
+          <article><span>启用规则</span><strong id="metricEnabled">6</strong><small>条规则</small></article>
+          <article><span>应用渠道</span><strong id="metricChannels">3</strong><small>个已配置渠道</small></article>
+          <article><span>子渠道继承</span><strong id="metricInheritance">4</strong><small>个子渠道生效</small></article>
           <article><span>最近更新</span><strong class="metric-time" id="metricUpdated">今天</strong><small>配置立即生效</small></article>
         </section>
 
@@ -100,16 +102,18 @@
           <section class="panel rules-panel" aria-labelledby="rules-title">
             <div class="panel-heading">
               <div>
-                <h2 id="rules-title">加价规则</h2>
-                <p>编辑价格范围或加价金额，前台报价同步更新。</p>
+                <h2 id="rules-title">虚拟加价规则</h2>
+                <p>同一渠道内区间不可重叠；子渠道规则优先于父渠道继承规则。</p>
               </div>
               <span class="rule-count"><b id="ruleCount">6</b> 条规则</span>
             </div>
 
             <div class="rule-list-head" aria-hidden="true">
-              <span>价格段</span>
-              <span>加价金额</span>
-              <span>命中成色</span>
+              <span>应用渠道</span>
+              <span>估价金额最低值</span>
+              <span>估价金额最高值</span>
+              <span>虚拟加价系数</span>
+              <span>封顶金额</span>
               <span>状态</span>
               <span>操作</span>
             </div>
@@ -124,11 +128,15 @@
               </div>
               <span class="live-badge"><i aria-hidden="true"></i>实时</span>
             </div>
+            <label class="preview-channel-row">
+              <span>预览应用渠道</span>
+              <select id="previewChannel" aria-label="选择预览应用渠道"></select>
+            </label>
             <div class="preview-list" id="previewList"></div>
             <div class="preview-legend">
-              <span><i class="legend-dot base"></i>基础价</span>
-              <span><i class="legend-dot add"></i>加价</span>
-              <span><i class="legend-dot final"></i>最新估价</span>
+              <span><i class="legend-dot base"></i>原估价</span>
+              <span><i class="legend-dot add"></i>虚拟加价</span>
+              <span><i class="legend-dot final"></i>新估价</span>
             </div>
             <a class="preview-button" href="./index.html">
               查看前台报价页
@@ -136,7 +144,7 @@
                 <path d="M4 10h11M11 6l4 4-4 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
               </svg>
             </a>
-            <p class="preview-note">配置修改保存在当前浏览器，用于静态原型演示，不会写入真实报价系统。</p>
+            <p class="preview-note">配置保存在当前浏览器，用于静态原型演示，不会写入真实报价系统。</p>
           </aside>
         </div>
       </main>
@@ -146,10 +154,10 @@
       <form id="ruleForm" novalidate>
         <div class="dialog-header">
           <div>
-            <p class="dialog-eyebrow">PRICE BAND RULE</p>
-            <h2 id="rule-dialog-title">新增价格段</h2>
+            <p class="dialog-eyebrow">VIRTUAL MARKUP RULE</p>
+            <h2 id="rule-dialog-title">新增虚拟加价规则</h2>
           </div>
-          <button class="icon-button" id="closeRuleDialog" type="button" aria-label="关闭价格段编辑">
+          <button class="icon-button" id="closeRuleDialog" type="button" aria-label="关闭规则编辑">
             <svg viewBox="0 0 20 20" aria-hidden="true">
               <path d="m5 5 10 10M15 5 5 15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.7" />
             </svg>
@@ -157,28 +165,47 @@
         </div>
 
         <div class="dialog-body">
-          <p class="dialog-intro">填写成色基础价的区间与该区间额外叠加的金额，保存后立即应用到前台最新估价。</p>
+          <p class="dialog-intro">填写应用渠道与估价金额区间，系统按虚拟加价系数计算加价，并用封顶金额限制单笔最高加价。</p>
+          <label class="field">
+            <span>应用渠道 <b>*</b></span>
+            <span class="select-wrap">
+              <select id="ruleChannel" name="channelId" aria-describedby="channelInheritanceHint"></select>
+            </span>
+            <small class="field-note" id="channelInheritanceHint"></small>
+          </label>
           <div class="field-grid">
             <label class="field">
-              <span>最低价 <b>*</b></span>
+              <span>估价金额最低值 <b>*</b></span>
               <span class="input-wrap"><i>¥</i><input id="ruleMin" name="min" type="number" inputmode="numeric" min="0" step="1" placeholder="0" required /></span>
             </label>
             <label class="field">
-              <span>最高价 <em>选填</em></span>
+              <span>估价金额最高值 <em>选填</em></span>
               <span class="input-wrap"><i>¥</i><input id="ruleMax" name="max" type="number" inputmode="numeric" min="0" step="1" placeholder="留空表示不设上限" /></span>
             </label>
           </div>
-          <label class="field">
-            <span>额外叠加金额 <b>*</b></span>
-            <span class="input-wrap amount"><i>+ ¥</i><input id="ruleAmount" name="amount" type="number" inputmode="numeric" min="0" step="1" placeholder="请输入加价金额" required /></span>
-          </label>
+          <div class="field-grid">
+            <label class="field">
+              <span>虚拟加价系数 <b>*</b></span>
+              <span class="input-wrap"><i>×</i><input id="ruleCoefficient" name="coefficient" type="number" inputmode="decimal" min="1.01" max="9.99" step="0.01" placeholder="如 1.05" required /></span>
+            </label>
+            <label class="field">
+              <span>封顶金额 <b>*</b></span>
+              <span class="input-wrap"><i>¥</i><input id="ruleCap" name="cap" type="number" inputmode="numeric" min="0" step="1" placeholder="单笔最高加价" required /></span>
+            </label>
+          </div>
           <label class="switch-field">
-            <span><strong>保存后立即启用</strong><small>停用规则不参与前台最新估价计算。</small></span>
+            <span><strong>保存后立即启用</strong><small>停用规则不参与前台新估价计算。</small></span>
             <input id="ruleEnabled" name="enabled" type="checkbox" checked />
             <span class="switch-ui" aria-hidden="true"></span>
           </label>
-          <div class="formula-preview" id="dialogFormula">
-            <span>基础价 <b id="dialogBaseHint">4,650</b></span><i>＋</i><span>加价 <b id="dialogAmountHint">200</b></span><i>＝</i><strong id="dialogFinalHint">4,850</strong>
+          <div class="formula-preview" id="dialogFormula" aria-live="polite">
+            <span>最高值 <b id="dialogBaseHint">4,999</b></span>
+            <i>×</i>
+            <span>(系数−1) <b id="dialogCoeffHint">0.05</b></span>
+            <i>→</i>
+            <span>加价 <b id="dialogExtraHint">246</b></span>
+            <span class="cap-hint">封顶 <b id="dialogCapHint">200</b></span>
+            <strong id="dialogFinalHint">¥5,199</strong>
           </div>
           <p class="form-error" id="formError" role="alert" hidden></p>
         </div>

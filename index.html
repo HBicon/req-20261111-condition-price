@@ -6,16 +6,16 @@
     <meta name="theme-color" content="#12ae95" />
     <meta
       name="description"
-      content="回收报价详情页成色价展示原型：根据后台价格段加价配置，展示靓机、小花、大花、外爆、内爆五档最新估价。"
+      content="回收报价详情页成色价展示原型：按应用渠道的虚拟加价系数与封顶金额，展示靓机、小花、大花、外爆、内爆五档原估价和新估价。"
     />
     <title>成色价展示｜回收报价原型</title>
     <link
       rel="icon"
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2312ae95'/%3E%3Cpath d='M19 42h26v7H19zm3-10h20v6H22zm5-12h10v6H27z' fill='white'/%3E%3C/svg%3E"
     />
-    <link rel="stylesheet" href="./assets/app.css?v=20261111-3" />
-    <script src="./assets/pricing.js?v=20261111-3" defer></script>
-    <script src="./assets/app.js?v=20261111-3" defer></script>
+    <link rel="stylesheet" href="./assets/app.css?v=20261112-2" />
+    <script src="./assets/pricing.js?v=20261112-2" defer></script>
+    <script src="./assets/app.js?v=20261112-2" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">跳到主要内容</a>
@@ -40,7 +40,7 @@
         <section class="price-card" aria-labelledby="price-card-title">
           <div class="price-card-head">
             <div>
-              <p class="eyebrow">后台配置 · 最新估价</p>
+              <p class="eyebrow">后台配置 · 新估价</p>
               <h2 id="price-card-title">价格详情</h2>
             </div>
             <div class="display-switch" role="group" aria-label="价格展示方式">
@@ -52,25 +52,46 @@
             </div>
           </div>
 
+          <div class="channel-context" aria-label="当前估价应用渠道">
+            <label class="channel-selector" for="channelSelect">
+              <span>应用渠道</span>
+              <span class="channel-select-shell">
+                <select id="channelSelect" aria-label="选择应用渠道">
+                  <option value="app">有得卖 App</option>
+                </select>
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                </svg>
+              </span>
+            </label>
+            <span class="channel-context-note" id="channelContextNote">有得卖 App · 本渠道规则</span>
+          </div>
+
           <div class="price-focus">
             <p class="price-kicker">
               <span class="status-dot" aria-hidden="true"></span>
-              <span id="priceKicker">最新估价 · 靓机</span>
+              <span id="priceKicker">新估价 · 靓机</span>
             </p>
             <div class="price-line">
               <span class="currency" aria-hidden="true">¥</span>
               <strong class="price-value" id="priceValue">5,123</strong>
-              <span class="delta-badge" id="deltaBadge">含加价 +¥200</span>
+              <span class="delta-badge" id="deltaBadge">虚拟加价 +¥200</span>
             </div>
+            <p class="range-note" id="rangeNote" hidden></p>
             <p class="price-description" id="priceDescription">屏幕、边框、背板状态良好</p>
             <div class="price-breakdown" aria-live="polite">
               <div class="breakdown-formula">
-                <span>成色基础价 <b id="basePriceValue">¥4,923</b></span>
+                <span>原估价 <b id="basePriceValue">¥4,923</b></span>
                 <i aria-hidden="true">+</i>
-                <span>价格段加价 <b id="bandExtraValue">¥200</b></span>
+                <span>虚拟加价 <b id="bandExtraValue">+¥200</b></span>
+                <i aria-hidden="true">=</i>
+                <span>新估价 <b id="newEstimateValue">¥5,123</b></span>
               </div>
               <div class="breakdown-meta">
-                <span id="bandMatchText">命中 4,500–4,999</span>
+                <span class="breakdown-source">
+                  <strong id="channelSourceText">有得卖 App · 本渠道规则</strong>
+                  <small id="bandMatchText">命中 ¥4,000–¥4,999 · 系数 1.05 · 封顶 ¥200</small>
+                </span>
                 <a href="./config.html">后台配置 ›</a>
               </div>
             </div>
@@ -78,7 +99,7 @@
 
           <div class="condition-picker" id="conditionPicker">
             <div class="condition-heading">
-              <span>五档成色最新估价</span>
+              <span>五档成色新估价</span>
               <button class="text-button" id="openGradeDialog" type="button">
                 判定标准
                 <svg viewBox="0 0 16 16" aria-hidden="true">
@@ -91,26 +112,31 @@
                 <span class="grade-dot" aria-hidden="true"></span>
                 <span class="grade-name">靓机</span>
                 <strong class="grade-price" data-grade-price="excellent">5,123</strong>
+                <small class="grade-original" data-grade-original="excellent">原价 ¥4,923</small>
               </button>
               <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="minor" tabindex="-1">
                 <span class="grade-dot" aria-hidden="true"></span>
                 <span class="grade-name">小花</span>
                 <strong class="grade-price" data-grade-price="minor">4,850</strong>
+                <small class="grade-original" data-grade-original="minor">原价 ¥4,650</small>
               </button>
               <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="major" tabindex="-1">
                 <span class="grade-dot" aria-hidden="true"></span>
                 <span class="grade-name">大花</span>
-                <strong class="grade-price" data-grade-price="major">4,330</strong>
+                <strong class="grade-price" data-grade-price="major">4,380</strong>
+                <small class="grade-original" data-grade-original="major">原价 ¥4,180</small>
               </button>
               <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="outer" tabindex="-1">
                 <span class="grade-dot" aria-hidden="true"></span>
                 <span class="grade-name">外爆</span>
-                <strong class="grade-price" data-grade-price="outer">3,360</strong>
+                <strong class="grade-price" data-grade-price="outer">3,358</strong>
+                <small class="grade-original" data-grade-original="outer">原价 ¥3,260</small>
               </button>
               <button class="condition-option" type="button" role="radio" aria-checked="false" data-grade="inner" tabindex="-1">
                 <span class="grade-dot" aria-hidden="true"></span>
                 <span class="grade-name">内爆</span>
-                <strong class="grade-price" data-grade-price="inner">2,500</strong>
+                <strong class="grade-price" data-grade-price="inner">2,499</strong>
+                <small class="grade-original" data-grade-original="inner">原价 ¥2,450</small>
               </button>
             </div>
           </div>
@@ -120,7 +146,7 @@
               <span>预估下周</span>
               <strong>↘ 跌 383 元</strong>
             </div>
-            <p id="estimateHint">价格已叠加后台价格段加价，建议今天锁定报价。</p>
+            <p id="estimateHint">已按当前应用渠道叠加虚拟加价，建议今天锁定报价。</p>
           </div>
 
           <div class="card-footnote">
@@ -128,7 +154,7 @@
               <circle cx="8" cy="8" r="6.3" fill="none" stroke="currentColor" stroke-width="1.2" />
               <path d="M8 7.1v3.5M8 5.1v.1" stroke="currentColor" stroke-linecap="round" stroke-width="1.3" />
             </svg>
-            <span id="footnoteText">最新估价＝成色基础价＋价格段加价，最终以质检结果为准</span>
+            <span id="footnoteText">新估价＝原估价＋虚拟加价，最终以质检结果为准</span>
           </div>
         </section>
 
@@ -225,7 +251,7 @@
           </div>
         </section>
 
-        <p class="legal-note">提交后，最终回收价以门店质检结果为准。最新估价含后台价格段加价，成色判定与功能异常不可重复计价。</p>
+        <p class="legal-note">提交后，最终回收价以门店质检结果为准。新估价已按应用渠道叠加虚拟加价，成色判定与功能异常不可重复计价。</p>
       </main>
 
       <button class="service-button" id="serviceButton" type="button" aria-label="联系在线客服">
@@ -241,8 +267,8 @@
 
       <footer class="sticky-footer">
         <div class="sticky-summary" aria-live="polite">
-          <span id="stickyLabel">靓机成色价</span>
-          <strong id="stickyPrice">¥4,923</strong>
+          <span id="stickyLabel">靓机新估价</span>
+          <strong id="stickyPrice">¥5,123</strong>
         </div>
         <button class="quote-button" id="quoteButton" type="button">
           询高价

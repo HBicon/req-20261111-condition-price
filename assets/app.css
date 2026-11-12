@@ -283,6 +283,90 @@ p {
   vertical-align: 1px;
 }
 
+.channel-context {
+  display: flex;
+  margin-top: 13px;
+  padding: 7px 8px 7px 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 1px solid #e1ece8;
+  border-radius: 9px;
+  background: #f7fbf9;
+}
+
+.channel-selector {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+}
+
+.channel-selector > span:first-child {
+  flex: 0 0 auto;
+  color: #687570;
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.channel-select-shell {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.channel-select-shell select {
+  width: 128px;
+  max-width: 100%;
+  height: 25px;
+  padding: 0 22px 0 7px;
+  overflow: hidden;
+  appearance: none;
+  border: 1px solid #d3e3dd;
+  border-radius: 6px;
+  background: #fff;
+  color: #15483f;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.channel-select-shell select:focus-visible {
+  outline: 2px solid rgba(18, 174, 149, 0.32);
+  outline-offset: 1px;
+}
+
+.channel-select-shell svg {
+  position: absolute;
+  right: 5px;
+  width: 13px;
+  height: 13px;
+  color: #668078;
+  pointer-events: none;
+}
+
+.channel-context-note {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  color: var(--green-dark);
+  font-size: 8.5px;
+  font-weight: 620;
+  line-height: 1.35;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.channel-context-note.is-inherited {
+  color: #916019;
+}
+
 .price-focus {
   padding: 18px 0 15px;
 }
@@ -331,7 +415,7 @@ p {
 }
 
 .delta-badge {
-  max-width: 94px;
+  max-width: 108px;
   margin-bottom: 7px;
   margin-left: 6px;
   padding: 4px 7px;
@@ -354,6 +438,20 @@ p {
   color: var(--muted);
   font-size: 10.5px;
   line-height: 1.45;
+}
+
+.range-note {
+  margin-top: 6px;
+  padding: 5px 7px;
+  border-radius: 6px;
+  background: #fff7e9;
+  color: #87591a;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.range-note[hidden] {
+  display: none;
 }
 
 .price-breakdown {
@@ -395,26 +493,56 @@ p {
 
 .breakdown-meta {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
   margin-top: 5px;
   padding-top: 5px;
   border-top: 1px dashed #dce9e5;
   color: #5d6b66;
-  font-size: 9px;
   line-height: 1.4;
 }
 
-.breakdown-meta span {
+.breakdown-source {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.breakdown-source strong,
+.breakdown-source small {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+@media (max-width: 359px) {
+  .breakdown-source strong,
+  .breakdown-source small {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+}
+
+.breakdown-source strong {
+  color: #40514b;
+  font-size: 9px;
+  font-weight: 660;
+}
+
+.breakdown-source small {
+  color: #63716d;
+  font-size: 8.5px;
+  font-weight: 450;
+}
+
 .breakdown-meta a {
   flex: 0 0 auto;
+  margin-top: 1px;
   color: var(--green-dark);
+  font-size: 8.5px;
   font-weight: 650;
   text-decoration: none;
 }
@@ -474,7 +602,7 @@ p {
   position: relative;
   display: flex;
   min-width: 0;
-  min-height: 67px;
+  min-height: 77px;
   padding: 9px 3px 8px;
   align-items: center;
   justify-content: center;
@@ -557,6 +685,26 @@ p {
 .condition-option.is-selected strong {
   color: var(--ink);
   font-weight: 720;
+}
+
+.grade-original {
+  max-width: 100%;
+  overflow: hidden;
+  color: #52615c;
+  font-size: 8px;
+  font-weight: 520;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.condition-option.is-selected .grade-original {
+  color: #547069;
+}
+
+#newEstimateValue {
+  color: var(--green-dark);
 }
 
 .estimate-panel {
@@ -1187,15 +1335,30 @@ p {
   }
 
   .condition-option {
-    min-height: 63px;
+    min-height: 72px;
   }
 
   .condition-option strong {
     font-size: 9.5px;
   }
 
+  .grade-original {
+    font-size: 7.5px;
+  }
+
+  .channel-context {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .channel-context-note {
+    width: 100%;
+    text-align: left;
+  }
+
   .delta-badge {
-    max-width: 79px;
+    max-width: 88px;
     font-size: 8.5px;
   }
 }

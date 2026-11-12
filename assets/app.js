@@ -31,6 +31,7 @@ const estimateBasePrice = 4923;
 const modeButtons = [...document.querySelectorAll("[data-price-mode]")];
 const conditionButtons = [...document.querySelectorAll(".condition-option")];
 const gradePriceElements = [...document.querySelectorAll("[data-grade-price]")];
+const gradeOriginalElements = [...document.querySelectorAll("[data-grade-original]")];
 const conditionPicker = document.querySelector("#conditionPicker");
 const estimatePanel = document.querySelector("#estimatePanel");
 const estimateHint = document.querySelector("#estimateHint");
@@ -38,9 +39,14 @@ const priceKicker = document.querySelector("#priceKicker");
 const priceValue = document.querySelector("#priceValue");
 const deltaBadge = document.querySelector("#deltaBadge");
 const priceDescription = document.querySelector("#priceDescription");
+const rangeNote = document.querySelector("#rangeNote");
 const basePriceValue = document.querySelector("#basePriceValue");
 const bandExtraValue = document.querySelector("#bandExtraValue");
+const newEstimateValue = document.querySelector("#newEstimateValue");
 const bandMatchText = document.querySelector("#bandMatchText");
+const channelSourceText = document.querySelector("#channelSourceText");
+const channelContextNote = document.querySelector("#channelContextNote");
+const channelSelect = document.querySelector("#channelSelect");
 const footnoteText = document.querySelector("#footnoteText");
 const stickyLabel = document.querySelector("#stickyLabel");
 const stickyPrice = document.querySelector("#stickyPrice");
@@ -49,29 +55,97 @@ const toast = document.querySelector("#toast");
 
 let currentMode = "condition";
 let currentGrade = "excellent";
+let currentChannelId = getChannelFromUrl();
 let toastTimer;
 
 function formatPrice(value) {
   return currencyFormatter.format(value);
 }
 
+function getChannelFromUrl() {
+  const channelId = new URLSearchParams(window.location.search).get("channel");
+  return PricingConfig.getChannel(channelId) ? channelId : "app";
+}
+
+function getChannelOptionLabel(channel) {
+  return `${"　".repeat(channel.depth)}${channel.depth > 0 ? "└ " : ""}${channel.name}`;
+}
+
+function populateChannelSelect() {
+  channelSelect.innerHTML = PricingConfig.getChannelOptions()
+    .map(
+      (channel) =>
+        `<option value="${channel.id}"${channel.id === currentChannelId ? " selected" : ""}>${getChannelOptionLabel(channel)}</option>`,
+    )
+    .join("");
+  channelSelect.value = currentChannelId;
+}
+
+function syncChannelUrl(channelId) {
+  try {
+    const url = new URL(window.location.href);
+    if (channelId === "app") {
+      url.searchParams.delete("channel");
+    } else {
+      url.searchParams.set("channel", channelId);
+    }
+    window.history.replaceState(null, "", url);
+  } catch (error) {
+    // 静态原型在受限制的预览环境中仍可继续切换渠道。
+  }
+}
+
+function getChannelName() {
+  return PricingConfig.getChannel(currentChannelId)?.name || "当前渠道";
+}
+
+function formatBasePrice(quote) {
+  if (quote.baseLow === quote.baseHigh) return `¥${formatPrice(quote.baseHigh)}`;
+  return `¥${formatPrice(quote.baseLow)}–¥${formatPrice(quote.baseHigh)}`;
+}
+
 function renderConditionPriceTiles(rules) {
   gradePriceElements.forEach((element) => {
     const grade = grades[element.dataset.gradePrice];
-    const quote = PricingConfig.calculate(grade.price, rules);
+    const quote = PricingConfig.calculate(grade.price, currentChannelId, rules);
     element.textContent = formatPrice(quote.final);
-    element.title = `基础价 ¥${formatPrice(quote.base)}，加价 ¥${formatPrice(quote.extra)}`;
+    element.title = `原估价 ${formatBasePrice(quote)}，虚拟加价 +¥${formatPrice(quote.extra)}，新估价 ¥${formatPrice(quote.newHigh)}`;
+  });
+
+  gradeOriginalElements.forEach((element) => {
+    const grade = grades[element.dataset.gradeOriginal];
+    const quote = PricingConfig.calculate(grade.price, currentChannelId, rules);
+    element.textContent = `原价 ${formatBasePrice(quote)}`;
   });
 }
 
 function renderQuoteBreakdown(quote) {
-  basePriceValue.textContent = `¥${formatPrice(quote.base)}`;
-  bandExtraValue.textContent = `+¥${formatPrice(quote.extra)}`;
+  basePriceValue.textContent = formatBasePrice(quote);
+  bandExtraValue.textContent = quote.matched ? `+¥${formatPrice(quote.extra)}` : "¥0";
+  newEstimateValue.textContent = `¥${formatPrice(quote.newHigh)}`;
+  channelSourceText.textContent = quote.matched
+    ? quote.inherited
+      ? `${getChannelName()} · 继承 ${quote.sourceChannel.name}`
+      : `${getChannelName()} · 本渠道规则`
+    : `${getChannelName()} · 当前区间未配规则`;
+  channelContextNote.textContent = quote.matched
+    ? quote.inherited
+      ? `继承 ${quote.sourceChannel.name}`
+      : "本渠道规则"
+    : "当前区间未配置";
+  channelContextNote.classList.toggle("is-inherited", quote.inherited);
   bandMatchText.textContent = quote.matched
-    ? `命中 ${PricingConfig.formatBand(quote.rule)}`
-    : "当前价格段未配置加价";
-  deltaBadge.textContent = quote.matched ? `含加价 +¥${formatPrice(quote.extra)}` : "未命中加价";
+    ? `命中 ${PricingConfig.formatBand(quote.rule)} · 系数 ${PricingConfig.formatCoefficient(quote.rule.coefficient)} · 封顶 ¥${formatPrice(quote.rule.cap)}${quote.capped ? " · 已触顶" : ""}`
+    : "该估价区间未配置虚拟加价";
+  bandMatchText.title = bandMatchText.textContent;
+  deltaBadge.textContent = quote.matched ? `虚拟加价 +¥${formatPrice(quote.extra)}` : "未命中加价";
   deltaBadge.classList.toggle("is-deducted", !quote.matched);
+
+  const isRange = quote.baseLow !== quote.baseHigh;
+  rangeNote.hidden = !isRange;
+  if (isRange) {
+    rangeNote.textContent = `区间估价按最高值 ¥${formatPrice(quote.baseHigh)} 命中规则，区间首尾同步加价 +¥${formatPrice(quote.extra)}。`;
+  }
 }
 
 function renderPrice() {
@@ -80,32 +154,32 @@ function renderPrice() {
   renderConditionPriceTiles(rules);
 
   if (currentMode === "estimate") {
-    const quote = PricingConfig.calculate(estimateBasePrice, rules);
+    const quote = PricingConfig.calculate(estimateBasePrice, currentChannelId, rules);
     priceValue.textContent = formatPrice(quote.final);
     stickyPrice.textContent = `¥${formatPrice(quote.final)}`;
-    priceKicker.textContent = "最新估价 · 今日检测";
+    priceKicker.textContent = "新估价 · 今日检测";
     priceDescription.textContent = "综合 12 项检测状态与近期行情给出";
     renderQuoteBreakdown(quote);
     estimateHint.textContent = quote.matched
-      ? `已叠加价格段加价 ¥${formatPrice(quote.extra)}，建议今天锁定报价。`
-      : "当前价格段未配置加价，展示基础预估价。";
+      ? `已叠加虚拟加价 ¥${formatPrice(quote.extra)}（${quote.inherited ? `继承 ${quote.sourceChannel.name}` : "本渠道规则"}），建议今天锁定报价。`
+      : "当前应用渠道和估价区间未配置虚拟加价，展示原预估价。";
     footnoteText.textContent = quote.matched
-      ? `最新估价＝基础预估价 ¥${formatPrice(quote.base)}＋价格段加价 ¥${formatPrice(quote.extra)}，最终以质检结果为准`
-      : "当前价格段未配置加价，最终价格以质检结果为准";
-    stickyLabel.textContent = "最新预估价";
+      ? `新估价＝原预估价 ${formatBasePrice(quote)}＋虚拟加价 ¥${formatPrice(quote.extra)}${quote.capped ? "（已封顶）" : ""}，最终以质检结果为准`
+      : "当前应用渠道和估价区间未配置虚拟加价，最终价格以质检结果为准";
+    stickyLabel.textContent = "新预估价";
     return;
   }
 
-  const quote = PricingConfig.calculate(grade.price, rules);
+  const quote = PricingConfig.calculate(grade.price, currentChannelId, rules);
   priceValue.textContent = formatPrice(quote.final);
   stickyPrice.textContent = `¥${formatPrice(quote.final)}`;
-  priceKicker.textContent = `最新估价 · ${grade.name}`;
+  priceKicker.textContent = `新估价 · ${grade.name}`;
   priceDescription.textContent = grade.description;
   renderQuoteBreakdown(quote);
   footnoteText.textContent = quote.matched
-    ? `最新估价＝成色基础价 ¥${formatPrice(quote.base)}＋价格段加价 ¥${formatPrice(quote.extra)}，最终以质检结果为准`
-    : "当前价格段未配置加价，展示成色基础价，最终以质检结果为准";
-  stickyLabel.textContent = `${grade.name}最新估价`;
+    ? `新估价＝原估价 ${formatBasePrice(quote)}＋虚拟加价 ¥${formatPrice(quote.extra)}${quote.capped ? "（已封顶）" : ""}，最终以质检结果为准`
+    : "当前应用渠道和估价区间未配置虚拟加价，展示原估价，最终以质检结果为准";
+  stickyLabel.textContent = `${grade.name}新估价`;
 }
 
 function setMode(mode) {
@@ -144,6 +218,14 @@ function setGrade(gradeKey, { shouldFocus = false } = {}) {
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => setMode(button.dataset.priceMode));
+});
+
+channelSelect.addEventListener("change", () => {
+  const nextChannelId = PricingConfig.getChannel(channelSelect.value) ? channelSelect.value : "app";
+  currentChannelId = nextChannelId;
+  channelSelect.value = nextChannelId;
+  syncChannelUrl(nextChannelId);
+  renderPrice();
 });
 
 conditionButtons.forEach((button, index) => {
@@ -237,7 +319,8 @@ document.querySelector("#serviceButton").addEventListener("click", () => {
 
 document.querySelector("#quoteButton").addEventListener("click", () => {
   const { rules } = PricingConfig.loadState();
-  const price = formatPrice(PricingConfig.calculate(grades[currentGrade].price, rules).final);
+  const base = currentMode === "estimate" ? estimateBasePrice : grades[currentGrade].price;
+  const price = formatPrice(PricingConfig.calculate(base, currentChannelId, rules).final);
   showToast(`原型演示：已带入当前报价 ¥${price}，进入询高价流程`);
 });
 
@@ -249,9 +332,19 @@ document.querySelectorAll("[data-tip]").forEach((button) => {
   button.addEventListener("click", () => showToast(button.dataset.tip));
 });
 
-window.addEventListener("pageshow", renderPrice);
+window.addEventListener("pageshow", () => {
+  currentChannelId = getChannelFromUrl();
+  channelSelect.value = currentChannelId;
+  renderPrice();
+});
+window.addEventListener("popstate", () => {
+  currentChannelId = getChannelFromUrl();
+  channelSelect.value = currentChannelId;
+  renderPrice();
+});
 window.addEventListener("storage", (event) => {
   if (event.key === PricingConfig.STORAGE_KEY) renderPrice();
 });
 
+populateChannelSelect();
 renderPrice();
